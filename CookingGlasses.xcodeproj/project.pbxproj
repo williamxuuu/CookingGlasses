@@ -1,0 +1,550 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0049234614BBDFDF93114C13 /* MockWearablesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A888FA6CC771D78FE7BA7A /* MockWearablesService.swift */; };
+		183DFBDCEE3ADD7449858BBC /* DebugCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCD1B545D012CDBCF8603BCC /* DebugCameraView.swift */; };
+		1A6EBF6B2A7D0CF052BE90DB /* CookingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA460FC4FE378317822318B /* CookingView.swift */; };
+		2569DB3EC460C2743ABE74B9 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8D88D85EC9DF0B134C5D28 /* Components.swift */; };
+		25FB781535FC3D9665F24463 /* DATGlassesRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDD6DC3E43A2293CD138E0A /* DATGlassesRenderer.swift */; };
+		30D6E4CE4EA0150D40184C85 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC5F43C9BEBA9A70CE8125DA /* Foundation.framework */; };
+		3B1449134C3E5852D1839E18 /* MWDATCore in Frameworks */ = {isa = PBXBuildFile; productRef = 124ABC5DE816982942F58EFC /* MWDATCore */; };
+		40DC690D2FDF508C860E347A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC5F43C9BEBA9A70CE8125DA /* Foundation.framework */; };
+		53200E8A9BA3AE66BEE4A2C6 /* CameraFrame+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B76542AF046141EC9C196F3 /* CameraFrame+Image.swift */; };
+		5938B7DD2F6BDF3C1EF71DD8 /* MWDATCamera in Frameworks */ = {isa = PBXBuildFile; productRef = E5416EFDB4DB6D1487FC959E /* MWDATCamera */; };
+		6B00A9692FA33EBFC6799FA8 /* RecipeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF869D83A9FE166F3F8590F /* RecipeListView.swift */; };
+		70898CA66B0BDEC92C7EB946 /* CookingCore in Frameworks */ = {isa = PBXBuildFile; productRef = FE990F1C710ABE133322D129 /* CookingCore */; };
+		78735A0A05742E87A8476865 /* SousChefApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA475CFE3CE35634EB162DC /* SousChefApp.swift */; };
+		996C3630226BC32E7A5223C8 /* GlassesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A8CE9DBAE9FF4A0B53BD94B /* GlassesViewModel.swift */; };
+		B91948541FDBF1A70CB75BE4 /* TimerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCED67583A02D8F585276B9 /* TimerListView.swift */; };
+		BF82E006268370900374B5C2 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3C4C52783C8CEA24E27F91 /* HomeView.swift */; };
+		DC612CCB885FF31536C3C1FF /* MetaWearablesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885D5BCEE080CBFF22C7A9B6 /* MetaWearablesService.swift */; };
+		E479651AC511CB5E0D3F699C /* WearablesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A798D089194C1C230051D99 /* WearablesService.swift */; };
+		E93A05E960B364AE6C221B72 /* CookingFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE1A18410CE9EBE421F3F87 /* CookingFlowTests.swift */; };
+		EEFDA909CDD433349FF4015B /* MWDATDisplay in Frameworks */ = {isa = PBXBuildFile; productRef = 613038A84884C9D8C553315C /* MWDATDisplay */; };
+		FDC3B486012044F837A85D14 /* CookingSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77104FFD524B25DD5276399 /* CookingSessionStore.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		322577D20EA89C77ACBD7AD1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1BFE3F1783475C731BD4A178 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 60D1191A956D38AA5F8C5798;
+			remoteInfo = CookingGlasses;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1F8D88D85EC9DF0B134C5D28 /* Components.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Components.swift; path = iOS/Views/Components.swift; sourceTree = "<group>"; };
+		6A8CE9DBAE9FF4A0B53BD94B /* GlassesViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GlassesViewModel.swift; path = iOS/Wearables/GlassesViewModel.swift; sourceTree = "<group>"; };
+		6B76542AF046141EC9C196F3 /* CameraFrame+Image.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "CameraFrame+Image.swift"; path = "iOS/Services/CameraFrame+Image.swift"; sourceTree = "<group>"; };
+		6EE1A18410CE9EBE421F3F87 /* CookingFlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CookingFlowTests.swift; path = iOSUITests/CookingFlowTests.swift; sourceTree = "<group>"; };
+		74A888FA6CC771D78FE7BA7A /* MockWearablesService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MockWearablesService.swift; path = iOS/Mocks/MockWearablesService.swift; sourceTree = "<group>"; };
+		885D5BCEE080CBFF22C7A9B6 /* MetaWearablesService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MetaWearablesService.swift; path = iOS/Services/MetaWearablesService.swift; sourceTree = "<group>"; };
+		9A798D089194C1C230051D99 /* WearablesService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WearablesService.swift; path = iOS/Services/WearablesService.swift; sourceTree = "<group>"; };
+		C77104FFD524B25DD5276399 /* CookingSessionStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CookingSessionStore.swift; path = iOS/Stores/CookingSessionStore.swift; sourceTree = "<group>"; };
+		CC5F43C9BEBA9A70CE8125DA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		D68F9DFBD4699318F6C0BCAF /* CookingGlassesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CookingGlassesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DDA475CFE3CE35634EB162DC /* SousChefApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SousChefApp.swift; path = iOS/App/SousChefApp.swift; sourceTree = "<group>"; };
+		E258A0D81F92380155AB9A32 /* CookingGlasses.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CookingGlasses.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EAF869D83A9FE166F3F8590F /* RecipeListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RecipeListView.swift; path = iOS/Views/RecipeListView.swift; sourceTree = "<group>"; };
+		EBA460FC4FE378317822318B /* CookingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CookingView.swift; path = iOS/Views/CookingView.swift; sourceTree = "<group>"; };
+		EBDD6DC3E43A2293CD138E0A /* DATGlassesRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DATGlassesRenderer.swift; path = iOS/Wearables/DATGlassesRenderer.swift; sourceTree = "<group>"; };
+		EFCED67583A02D8F585276B9 /* TimerListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TimerListView.swift; path = iOS/Views/TimerListView.swift; sourceTree = "<group>"; };
+		FB3C4C52783C8CEA24E27F91 /* HomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HomeView.swift; path = iOS/Views/HomeView.swift; sourceTree = "<group>"; };
+		FCD1B545D012CDBCF8603BCC /* DebugCameraView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DebugCameraView.swift; path = iOS/Views/DebugCameraView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		27AAC20AA6CDA84F40CCAC96 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30D6E4CE4EA0150D40184C85 /* Foundation.framework in Frameworks */,
+				70898CA66B0BDEC92C7EB946 /* CookingCore in Frameworks */,
+				3B1449134C3E5852D1839E18 /* MWDATCore in Frameworks */,
+				5938B7DD2F6BDF3C1EF71DD8 /* MWDATCamera in Frameworks */,
+				EEFDA909CDD433349FF4015B /* MWDATDisplay in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5C73C4C2804B31719C3A69E7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				40DC690D2FDF508C860E347A /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8E92637B303C914093FD9061 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E258A0D81F92380155AB9A32 /* CookingGlasses.app */,
+				D68F9DFBD4699318F6C0BCAF /* CookingGlassesUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9E45414CFEDB35118DAC759B = {
+			isa = PBXGroup;
+			children = (
+				8E92637B303C914093FD9061 /* Products */,
+				C51BC05410BD24F731F150E8 /* Frameworks */,
+				F3AF1A47918C5EB65F301E01 /* iOS */,
+				A7FDDB3CEF7980BB6B20811B /* iOSUITests */,
+			);
+			sourceTree = "<group>";
+		};
+		A7FDDB3CEF7980BB6B20811B /* iOSUITests */ = {
+			isa = PBXGroup;
+			children = (
+				6EE1A18410CE9EBE421F3F87 /* CookingFlowTests.swift */,
+			);
+			name = iOSUITests;
+			sourceTree = "<group>";
+		};
+		C51BC05410BD24F731F150E8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EC6C5470881124AF9CA3FD17 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		EC6C5470881124AF9CA3FD17 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				CC5F43C9BEBA9A70CE8125DA /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		F3AF1A47918C5EB65F301E01 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				DDA475CFE3CE35634EB162DC /* SousChefApp.swift */,
+				74A888FA6CC771D78FE7BA7A /* MockWearablesService.swift */,
+				6B76542AF046141EC9C196F3 /* CameraFrame+Image.swift */,
+				885D5BCEE080CBFF22C7A9B6 /* MetaWearablesService.swift */,
+				9A798D089194C1C230051D99 /* WearablesService.swift */,
+				C77104FFD524B25DD5276399 /* CookingSessionStore.swift */,
+				1F8D88D85EC9DF0B134C5D28 /* Components.swift */,
+				EBA460FC4FE378317822318B /* CookingView.swift */,
+				FCD1B545D012CDBCF8603BCC /* DebugCameraView.swift */,
+				FB3C4C52783C8CEA24E27F91 /* HomeView.swift */,
+				EAF869D83A9FE166F3F8590F /* RecipeListView.swift */,
+				EFCED67583A02D8F585276B9 /* TimerListView.swift */,
+				EBDD6DC3E43A2293CD138E0A /* DATGlassesRenderer.swift */,
+				6A8CE9DBAE9FF4A0B53BD94B /* GlassesViewModel.swift */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		60D1191A956D38AA5F8C5798 /* CookingGlasses */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 83785B41DA3C22FD4C1A7C18 /* Build configuration list for PBXNativeTarget "CookingGlasses" */;
+			buildPhases = (
+				9AFB1A13BAD06A0A5179AEF5 /* Sources */,
+				27AAC20AA6CDA84F40CCAC96 /* Frameworks */,
+				FB79AF8E0A1835CB4CF963AD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CookingGlasses;
+			packageProductDependencies = (
+				FE990F1C710ABE133322D129 /* CookingCore */,
+				124ABC5DE816982942F58EFC /* MWDATCore */,
+				E5416EFDB4DB6D1487FC959E /* MWDATCamera */,
+				613038A84884C9D8C553315C /* MWDATDisplay */,
+			);
+			productName = CookingGlasses;
+			productReference = E258A0D81F92380155AB9A32 /* CookingGlasses.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E4D6C455C0D30FAF3940710F /* CookingGlassesUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0DB22A12A3289843A9A4937D /* Build configuration list for PBXNativeTarget "CookingGlassesUITests" */;
+			buildPhases = (
+				FABE410D2D97E234F29D5868 /* Sources */,
+				5C73C4C2804B31719C3A69E7 /* Frameworks */,
+				8117BDDE8D91EAC583062C19 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				95F3C29C7DD7576B59A2D290 /* PBXTargetDependency */,
+			);
+			name = CookingGlassesUITests;
+			productName = CookingGlassesUITests;
+			productReference = D68F9DFBD4699318F6C0BCAF /* CookingGlassesUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1BFE3F1783475C731BD4A178 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = 8FB327D12F57C6746C25D377 /* Build configuration list for PBXProject "CookingGlasses" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 9E45414CFEDB35118DAC759B;
+			minimizedProjectReferenceProxies = 0;
+			packageReferences = (
+				D3E454AE05D833BFE37D1FFC /* XCLocalSwiftPackageReference "." */,
+				18E55CD77801E2795B50961E /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8E92637B303C914093FD9061 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				60D1191A956D38AA5F8C5798 /* CookingGlasses */,
+				E4D6C455C0D30FAF3940710F /* CookingGlassesUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8117BDDE8D91EAC583062C19 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FB79AF8E0A1835CB4CF963AD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9AFB1A13BAD06A0A5179AEF5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				78735A0A05742E87A8476865 /* SousChefApp.swift in Sources */,
+				0049234614BBDFDF93114C13 /* MockWearablesService.swift in Sources */,
+				53200E8A9BA3AE66BEE4A2C6 /* CameraFrame+Image.swift in Sources */,
+				DC612CCB885FF31536C3C1FF /* MetaWearablesService.swift in Sources */,
+				E479651AC511CB5E0D3F699C /* WearablesService.swift in Sources */,
+				FDC3B486012044F837A85D14 /* CookingSessionStore.swift in Sources */,
+				2569DB3EC460C2743ABE74B9 /* Components.swift in Sources */,
+				1A6EBF6B2A7D0CF052BE90DB /* CookingView.swift in Sources */,
+				183DFBDCEE3ADD7449858BBC /* DebugCameraView.swift in Sources */,
+				BF82E006268370900374B5C2 /* HomeView.swift in Sources */,
+				6B00A9692FA33EBFC6799FA8 /* RecipeListView.swift in Sources */,
+				B91948541FDBF1A70CB75BE4 /* TimerListView.swift in Sources */,
+				25FB781535FC3D9665F24463 /* DATGlassesRenderer.swift in Sources */,
+				996C3630226BC32E7A5223C8 /* GlassesViewModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FABE410D2D97E234F29D5868 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E93A05E960B364AE6C221B72 /* CookingFlowTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		95F3C29C7DD7576B59A2D290 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CookingGlasses;
+			target = 60D1191A956D38AA5F8C5798 /* CookingGlasses */;
+			targetProxy = 322577D20EA89C77ACBD7AD1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0A7B3B23760B9A90482C3789 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = iOS/App/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.cookingglasses.sous;
+				PRODUCT_NAME = Sous;
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		1486E5801C3E644BA0DF1FB2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		37F622D7F3F817ADBEF844B9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cookingglasses.sous.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = CookingGlasses;
+			};
+			name = Debug;
+		};
+		851B8D923554137266A7D8D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cookingglasses.sous.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = CookingGlasses;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		96BA2C1D6B1ABA37821A18DC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		F7681856DF8904D6E2096FA2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = iOS/App/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.cookingglasses.sous;
+				PRODUCT_NAME = Sous;
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0DB22A12A3289843A9A4937D /* Build configuration list for PBXNativeTarget "CookingGlassesUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				851B8D923554137266A7D8D2 /* Release */,
+				37F622D7F3F817ADBEF844B9 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		83785B41DA3C22FD4C1A7C18 /* Build configuration list for PBXNativeTarget "CookingGlasses" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A7B3B23760B9A90482C3789 /* Release */,
+				F7681856DF8904D6E2096FA2 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8FB327D12F57C6746C25D377 /* Build configuration list for PBXProject "CookingGlasses" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1486E5801C3E644BA0DF1FB2 /* Debug */,
+				96BA2C1D6B1ABA37821A18DC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		D3E454AE05D833BFE37D1FFC /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		18E55CD77801E2795B50961E /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/facebook/meta-wearables-dat-ios";
+			requirement = {
+				kind = exactVersion;
+				version = 0.9.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		124ABC5DE816982942F58EFC /* MWDATCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 18E55CD77801E2795B50961E /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */;
+			productName = MWDATCore;
+		};
+		613038A84884C9D8C553315C /* MWDATDisplay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 18E55CD77801E2795B50961E /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */;
+			productName = MWDATDisplay;
+		};
+		E5416EFDB4DB6D1487FC959E /* MWDATCamera */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 18E55CD77801E2795B50961E /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */;
+			productName = MWDATCamera;
+		};
+		FE990F1C710ABE133322D129 /* CookingCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D3E454AE05D833BFE37D1FFC /* XCLocalSwiftPackageReference "." */;
+			productName = CookingCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 1BFE3F1783475C731BD4A178 /* Project object */;
+}

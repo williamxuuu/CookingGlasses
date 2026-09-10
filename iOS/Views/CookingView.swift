@@ -1,0 +1,121 @@
+import SwiftUI
+import CookingCore
+
+struct CookingView: View {
+    @EnvironmentObject private var store: CookingSessionStore
+    @State private var showCorrection = false
+    @State private var showAddTimer = false
+    var body: some View {
+        ScrollView {
+            if let session = store.session {
+                VStack(alignment: .leading, spacing: 22) {
+                    HStack { WatchBadge(active: store.status.isMonitoring); Spacer(); NavigationLink { DebugCameraView() } label: { Image(systemName: "slider.horizontal.3") }.accessibilityLabel("Debug and settings").accessibilityIdentifier("open_debug") }
+                    Text(session.recipe.title).font(.system(size: 31, design: .serif))
+                    HStack(spacing: 5) {
+                        ForEach(Array(session.recipe.steps.enumerated()), id: \.element.id) { index, step in
+                            Capsule().fill(session.completedStepIDs.contains(step.id) ? Palette.forest : (index == session.currentStepIndex ? Palette.orange : Palette.sage)).frame(height: 5)
+                        }
+                    }.accessibilityLabel("Step \(session.currentStepIndex + 1) of \(session.recipe.steps.count)")
+                    VStack(alignment: .leading, spacing: 16) {
+                        Eyebrow(text: "Step \(session.currentStepIndex + 1) / \(session.recipe.steps.count)")
+                        Text(session.currentStep.title).font(.system(size: 30, design: .serif))
+                        Text(session.currentStep.fullInstruction).font(.system(size: 18)).lineSpacing(5)
+                        if session.completedStepIDs.contains(session.currentStep.id) { Label("Step completed", systemImage: "checkmark.circle.fill").font(.caption).foregroundStyle(Palette.forest) }
+                        if session.isFinished { Label("Recipe steps complete — check food before serving", systemImage: "checkmark.seal").font(.subheadline) }
+                        Divider()
+                        HStack {
+                            Button { store.navigate(-1) } label: { Label("Previous", systemImage: "arrow.left") }.disabled(session.currentStepIndex == 0)
+                            Spacer()
+                            Button { store.navigate(1) } label: { HStack { Text("Next"); Image(systemName: "arrow.right") } }.disabled(session.currentStepIndex == session.recipe.steps.count - 1)
+                        }.font(.subheadline.weight(.semibold))
+                        PrimaryButton(title: "Mark done", icon: "checkmark") { store.markDone() }.accessibilityIdentifier("mark_done").disabled(!session.currentStep.prerequisiteStepIDs.isSubset(of: session.completedStepIDs))
+                        if !session.currentStep.prerequisiteStepIDs.isSubset(of: session.completedStepIDs) {
+                            Text("Complete earlier steps first, or use Correct recipe state below.").font(.caption).foregroundStyle(.secondary)
+                        }
+                    }.cookingCard()
+                    if let pending = session.pendingObservation {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Label("A quick check", systemImage: "questionmark.bubble").font(.headline)
+                            Text(pending.event.confirmationPrompt)
+                            HStack { Button("Yes, that's right") { store.confirmObservation() }.buttonStyle(.borderedProminent); Button("No") { store.rejectObservation() }.buttonStyle(.bordered) }
+                        }.cookingCard()
+                    }
+                    if let action = session.lastAction {
+                        HStack { Image(systemName: "sparkle"); Text(action).font(.subheadline); Spacer(); if session.canUndo { Button("Undo") { store.undo() }.font(.subheadline.weight(.bold)) } }.padding(16).background(Palette.sage, in: RoundedRectangle(cornerRadius: 18))
+                    }
+                    TimerListView()
+                    Button { showAddTimer = true } label: { Label("Add another timer", systemImage: "plus.circle").font(.subheadline.weight(.semibold)) }
+                    if session.currentStep.optionalTimer != nil {
+                        Button { store.startTimer() } label: { Label("Start this step's timer", systemImage: "timer").frame(maxWidth: .infinity) }.buttonStyle(.bordered).controlSize(.large).disabled(!session.currentStep.prerequisiteStepIDs.isSubset(of: session.completedStepIDs) || session.timers.contains { !$0.isManual && $0.associatedStepID == session.currentStep.id })
+                    }
+                    VStack(alignment: .leading, spacing: 14) {
+                        HStack { Image(systemName: "eyeglasses").font(.title2); Text("Cooking Watch").font(.headline); Spacer() }
+                        Text(store.status.detail).font(.subheadline).foregroundStyle(.secondary)
+                        PrimaryButton(title: store.watchRequested ? "Pause Cooking Watch" : "Start Cooking Watch", icon: store.watchRequested ? "pause" : "viewfinder") { Task { await store.toggleWatch() } }
+                        if !store.status.isMonitoring { Text("Timers keep running while Watch is paused.").font(.caption).foregroundStyle(.secondary) }
+                    }.cookingCard()
+                    if let model = store.glassesModel { GlassesPreview(model: model) }
+                    Button { showCorrection = true } label: { Label("Correct recipe state", systemImage: "arrow.uturn.backward").font(.subheadline) }
+                    Label("Use a food thermometer for chicken: 165°F / 74°C. Timers and visual appearance cannot confirm safety.", systemImage: "thermometer.medium").font(.footnote).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                }.padding(22)
+            } else { ContentUnavailableView("Ready when you are", systemImage: "frying.pan", description: Text("Choose a recipe to start cooking.")) }
+        }.background(Palette.cream).navigationTitle("In the kitchen").navigationBarTitleDisplayMode(.inline).toolbar(.visible, for: .navigationBar)
+            .sheet(isPresented: $showAddTimer) { AddTimerView() }
+            .sheet(isPresented: $showCorrection) {
+                NavigationStack {
+                    List {
+                        Section { Text("Choose where to restart. Earlier steps will be marked done; this step and later steps will be reset, including their timers. Earlier timers stay intact.").font(.subheadline) }
+                        if let session = store.session {
+                            ForEach(Array(session.recipe.steps.enumerated()), id: \.element.id) { index, step in
+                                Button("\(index + 1). \(step.title)") { store.correct(to: index); showCorrection = false }
+                            }
+                        }
+                    }.navigationTitle("Correct state").navigationBarTitleDisplayMode(.inline).toolbar { Button("Cancel") { showCorrection = false } }
+                }
+            }
+    }
+}
+
+private struct AddTimerView: View {
+    @EnvironmentObject private var store: CookingSessionStore
+    @Environment(\.dismiss) private var dismiss
+    @State private var label = ""
+    @State private var minutes = 5
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("What's cooking?") {
+                    TextField("Pasta, sauce, or another dish", text: $label)
+                    Stepper("\(minutes) minutes", value: $minutes, in: 1...180)
+                }
+                Section { Text("This timer keeps running as you move through the recipe.").font(.subheadline) }
+                Section {
+                    Button("Start timer") { store.addTimer(label: label.trimmingCharacters(in: .whitespacesAndNewlines), minutes: minutes); dismiss() }
+                        .disabled(label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || label.count > 50)
+                }
+            }.navigationTitle("Add timer").navigationBarTitleDisplayMode(.inline)
+                .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
+        }.presentationDetents([.medium, .large])
+    }
+}
+
+struct GlassesPreview: View {
+    var model: GlassesViewModel
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack { Text("GLASSES PREVIEW").font(.system(size: 10, weight: .bold, design: .monospaced)).tracking(1.5); Spacer(); Circle().fill(model.watchActive ? Color.green : Color.gray).frame(width: 6, height: 6) }.foregroundStyle(.white.opacity(0.65))
+            if model.expiredTimerID != nil {
+                Text("TIMER FINISHED").font(.headline)
+                Text("Check \(model.timerLabel ?? "your food").").font(.title3)
+            } else {
+                Text("STEP \(model.stepNumber) / \(model.totalSteps)").font(.caption.monospaced())
+                Text(model.instruction).font(.system(size: 22, weight: .medium)).fixedSize(horizontal: false, vertical: true)
+            }
+            if let remaining = model.timerRemaining {
+                HStack { Text(model.timerLabel ?? "Timer"); Spacer(); Text(timerText(remaining)).monospacedDigit() }.font(.headline).foregroundStyle(Palette.sage)
+            }
+            if model.additionalTimerCount > 0 { Text("+\(model.additionalTimerCount) timers").font(.caption) }
+            HStack { Text(model.expiredTimerID == nil ? "Previous" : "Dismiss"); Spacer(); Text(model.expiredTimerID == nil ? "Next" : "+1 min") }.font(.caption).foregroundStyle(.white.opacity(0.55))
+        }.padding(24).foregroundStyle(.white).background(Palette.ink, in: RoundedRectangle(cornerRadius: 24)).accessibilityElement(children: .combine)
+    }
+}
