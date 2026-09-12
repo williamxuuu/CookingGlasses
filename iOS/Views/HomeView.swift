@@ -30,6 +30,9 @@ struct HomeView: View {
                     NavigationLink { RecipeListView() } label: {
                         HStack { Text("Start Recipe"); Spacer(); Image(systemName: "arrow.right") }.font(.headline).padding(21).foregroundStyle(.white).background(Palette.forest, in: RoundedRectangle(cornerRadius: 18))
                     }.accessibilityIdentifier("start_recipe")
+                    NavigationLink { RecipeImportView() } label: {
+                        Label("Import a recipe", systemImage: "square.and.arrow.down").font(.headline).frame(maxWidth: .infinity).padding(18).background(.white, in: RoundedRectangle(cornerRadius: 18))
+                    }.accessibilityIdentifier("import_recipe")
                     HStack(spacing: 14) {
                         NavigationLink { FridgeView() } label: { Label("Scan Fridge", systemImage: "refrigerator").font(.subheadline.weight(.semibold)).frame(maxWidth: .infinity).padding(.vertical, 20).background(.white, in: RoundedRectangle(cornerRadius: 18)) }
                         NavigationLink { CookingView() } label: { Label("Resume Cooking", systemImage: "play").font(.subheadline.weight(.semibold)).frame(maxWidth: .infinity).padding(.vertical, 20).background(.white, in: RoundedRectangle(cornerRadius: 18)) }.disabled(store.session == nil)

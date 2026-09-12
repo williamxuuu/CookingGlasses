@@ -32,6 +32,8 @@ final class MetaWearablesService: WearablesService {
     private var monitoringGeneration = UUID()
     private var connecting = false
     private var monitoringRequested = false
+    private var deviceSelector: AutoDeviceSelector?
+    private var lastSessionError: DeviceSessionError?
     private var session: DeviceSession?
     private var camera: MWDATCamera.Camera?
     private var display: MWDATDisplay.Display?
@@ -48,11 +50,16 @@ final class MetaWearablesService: WearablesService {
 
     init(maximumDeliveryFrameRate: Double = 2) {
         frameGate = FrameDeliveryGate(minimumInterval: 1 / max(0.1, maximumDeliveryFrameRate))
+        do { try configureIfNeeded() }
+        catch { status.detail = error.localizedDescription }
     }
 
     func connect() async throws {
         let generation = lifecycleGeneration
         try configureIfNeeded()
+        guard !connecting else { throw AdapterError.message("A glasses connection is already in progress.") }
+        connecting = true
+        defer { connecting = false }
         if let session {
             switch session.state {
             case .started: return
@@ -62,9 +69,6 @@ final class MetaWearablesService: WearablesService {
             case .idle, .stopping, .stopped: await releaseSession()
             }
         }
-        guard !connecting else { throw AdapterError.message("A glasses connection is already in progress.") }
-        connecting = true
-        defer { connecting = false }
         let wearables = Wearables.shared
         if wearables.registrationState != .registered {
             status.connection = "Registering"
@@ -78,17 +82,34 @@ final class MetaWearablesService: WearablesService {
 
         // Restrict to actual display-capable hardware. Camera-only glasses cannot
         // satisfy this app's on-glasses instruction/navigation experience.
-        let selector = AutoDeviceSelector(wearables: wearables, filter: { $0.supportsDisplay() })
-        let newSession = try wearables.createSession(deviceSelector: selector)
-        session = newSession
-        observe(newSession)
-        status.connection = "Connecting"
-        status.detail = "Wear the glasses while the session starts."
+        guard let selector = deviceSelector else { throw CancellationError() }
+        status.connection = "Finding glasses"
+        status.detail = "App authorized. Waiting for Meta to select available display glasses."
         do {
+            // AutoDeviceSelector discovers its active device asynchronously. A
+            // session created immediately after init can fail with no eligible device.
+            let deadline = Date().addingTimeInterval(20)
+            while selector.activeDevice == nil {
+                try Task.checkCancellation()
+                guard lifecycleGeneration == generation else { throw CancellationError() }
+                guard Date() < deadline else {
+                    throw AdapterError.message("No live glasses device was selected. If your glasses are connected in Meta AI, tap Update Meta glasses app below: DAT 0.9 requires a compatible glasses app. Then reconnect.")
+                }
+                try await Task.sleep(for: .milliseconds(100))
+            }
+            try Task.checkCancellation()
+            guard lifecycleGeneration == generation else { throw CancellationError() }
+            let newSession = try wearables.createSession(deviceSelector: selector)
+            session = newSession
+            lastSessionError = nil
+            observe(newSession)
+            status.connection = "Connecting"
+            status.detail = "Wear the glasses while the session starts."
             try newSession.start() // Synchronous in DAT 0.9.0.
             try await waitUntilStarted(newSession)
             try attachDisplay(to: newSession)
         } catch {
+            guard lifecycleGeneration == generation else { throw CancellationError() }
             await releaseSession()
             status.connection = "Unavailable"
             status.detail = error.localizedDescription
@@ -179,6 +200,7 @@ final class MetaWearablesService: WearablesService {
         devicesTask = nil
         await releaseSession()
         configured = false
+        deviceSelector = nil
         latestModel = nil
         pendingModel = nil
         status = WearableStatus(connection: "Disconnected", camera: "Off", isMonitoring: false,
@@ -192,6 +214,13 @@ final class MetaWearablesService: WearablesService {
         } catch {
             status.detail = "Meta AI callback: \(error.localizedDescription)"
         }
+    }
+
+    func openGlassesAppUpdate() async throws {
+        try configureIfNeeded()
+        // The glasses-side DAT app has its own update flow, separate from iOS
+        // App Store updates and general glasses firmware. Same API as DisplayAccess.
+        try await Wearables.shared.openDATGlassesAppUpdate()
     }
 
     func render(_ model: GlassesViewModel) async {
@@ -223,10 +252,12 @@ final class MetaWearablesService: WearablesService {
         do { try Wearables.configure() }
         catch WearablesError.alreadyConfigured { /* Another app component configured DAT. */ }
         configured = true
+        // Match Meta's DisplayAccess sample: retain the selector across sessions.
+        deviceSelector = AutoDeviceSelector(wearables: Wearables.shared, filter: { $0.supportsDisplay() })
         registrationTask = Task { [weak self] in
             for await state in Wearables.shared.registrationStateStream() {
                 guard !Task.isCancelled else { break }
-                if self?.session == nil {
+                if self?.session == nil, self?.connecting == false {
                     self?.status.connection = state == .registered ? "Registered" : state.description
                 }
             }
@@ -238,7 +269,8 @@ final class MetaWearablesService: WearablesService {
                 let hasDisplay = devices.contains {
                     Wearables.shared.deviceForIdentifier($0)?.supportsDisplay() == true
                 }
-                self.status.canRenderOnGlasses = hasDisplay
+                // Discovery is not an active display session.
+                self.status.canRenderOnGlasses = false
                 if hasDisplay && !self.connecting {
                     self.status.detail = "Display glasses available. Connect to resynchronize the current recipe."
                 }
@@ -250,9 +282,15 @@ final class MetaWearablesService: WearablesService {
         let deadline = Date().addingTimeInterval(20)
         while target.state != .started {
             try Task.checkCancellation()
-            guard target.state != .stopped && target.state != .stopping else {
-                throw AdapterError.message("The glasses session ended before becoming ready. Reconnect when available.")
+            guard session === target else { throw CancellationError() }
+            if target.state == .stopped {
+                // DAT 0.9 closes errorStream at .stopped. Drain buffered errors
+                // before cleanup so a specific SDK failure is never replaced.
+                await sessionErrorTask?.value
+                if let error = lastSessionError { throw error }
+                throw AdapterError.message("Meta ended the glasses session without reporting a reason. Check that Sous has Bluetooth and Local Network access in iPhone Settings.")
             }
+            if let error = lastSessionError { throw error }
             guard Date() < deadline else {
                 throw AdapterError.message("Glasses connection timed out. Check Meta AI, wear state, and Developer Mode.")
             }
@@ -266,10 +304,14 @@ final class MetaWearablesService: WearablesService {
     }
 
     private func observe(_ target: DeviceSession) {
+        // Subscribe synchronously BEFORE start(), as in Meta's DisplayAccess.
+        // Creating these inside Task misses one-shot startup errors.
+        let stateStream = target.stateStream()
+        let errorStream = target.errorStream()
         sessionStateTask = Task { [weak self] in
             // 0.9.0 finishes this sequence after delivering .stopped. A terminal
             // session is never reused: the user reconnects to create a new one.
-            for await state in target.stateStream() {
+            for await state in stateStream {
                 guard !Task.isCancelled, let self, self.session === target else { break }
                 switch state {
                 case .started:
@@ -293,20 +335,21 @@ final class MetaWearablesService: WearablesService {
                     self.status.isMonitoring = false
                     self.status.canRenderOnGlasses = false
                     self.status.detail = "Cooking Watch paused — timers still running. Reconnect, then start Watch to resume."
-                    await self.releaseSession()
+                    // Keep observers until buffered SDK errors drain.
+                    // Reconnect/disconnect owns terminal session teardown.
                 case .idle, .starting, .stopping: break
                 }
             }
         }
         sessionErrorTask = Task { [weak self] in
-            for await error in target.errorStream() {
+            for await error in errorStream {
                 guard !Task.isCancelled, let self, self.session === target else { break }
-                self.status.detail = "Cooking Watch paused — timers still running. \(error.description)"
+                self.lastSessionError = error
+                self.status.detail = error.localizedDescription
                 self.status.isMonitoring = false
             }
         }
         if let device = Wearables.shared.deviceForIdentifier(target.deviceId) {
-            status.canRenderOnGlasses = device.supportsDisplay()
             tokens.append(device.addLinkStateListener { [weak self] state in
                 Task { @MainActor in
                     guard let self, self.session === target else { return }

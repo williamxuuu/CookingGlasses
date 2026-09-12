@@ -82,8 +82,10 @@ public struct Recipe: Codable, Equatable, Identifiable, Sendable {
     public var subtitle: String
     public var ingredients: [String]
     public var steps: [RecipeStep]
+    public var sourceURL: String?
+    public var importNotes: [String]?
 
-    public init(id: String, title: String, subtitle: String, ingredients: [String], steps: [RecipeStep]) {
+    public init(id: String, title: String, subtitle: String, ingredients: [String], steps: [RecipeStep], sourceURL: String? = nil, importNotes: [String]? = nil) {
         precondition(!steps.isEmpty, "A recipe requires at least one step")
         precondition(Set(steps.map(\.id)).count == steps.count, "Step IDs must be unique")
         self.id = id
@@ -91,6 +93,8 @@ public struct Recipe: Codable, Equatable, Identifiable, Sendable {
         self.subtitle = subtitle
         self.ingredients = ingredients
         self.steps = steps
+        self.sourceURL = sourceURL
+        self.importNotes = importNotes
     }
 }
 

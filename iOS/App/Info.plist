@@ -12,11 +12,13 @@
 <key>UILaunchScreen</key><dict/>
 <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>
 <key>NSBluetoothAlwaysUsageDescription</key><string>Connect your Meta glasses for cooking instructions and camera monitoring you start.</string>
+<key>NSLocalNetworkUsageDescription</key><string>Connect to your Meta glasses over Wi-Fi for cooking instructions and camera monitoring.</string>
+<key>NSBonjourServices</key><array><string>_bonjour._tcp</string></array>
 <key>NSCameraUsageDescription</key><string>Cooking Watch uses the glasses camera to detect cooking actions after you start monitoring.</string>
 <key>CFBundleURLTypes</key><array><dict><key>CFBundleURLSchemes</key><array><string>cookingglasses</string></array><key>CFBundleURLName</key><string>Meta DAT callback</string></dict></array>
 <key>LSApplicationQueriesSchemes</key><array><string>fb-viewapp</string></array>
 <key>UISupportedExternalAccessoryProtocols</key><array><string>com.meta.ar.wearable</string></array>
-<key>UIBackgroundModes</key><array><string>external-accessory</string><string>bluetooth-central</string></array>
+<key>UIBackgroundModes</key><array><string>external-accessory</string><string>bluetooth-central</string><string>bluetooth-peripheral</string><string>processing</string></array>
 <key>MWDAT</key><dict>
 <key>MetaAppID</key><string>0</string>
 <key>AppLinkURLScheme</key><string>cookingglasses://</string>

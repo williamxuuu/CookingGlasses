@@ -22,9 +22,15 @@ Open **CookingGlasses.xcodeproj**, select the **CookingGlasses** scheme, and run
 7. Tap **Simulate disconnect**, then **Connect / reconnect**. Cooking state and timer deadlines survive. Watch remains paused until explicitly restarted.
 8. Relaunch the app and **Resume Cooking**. Absolute timer deadlines restore from disk; Watch never starts automatically on launch.
 
-Try the 60% confidence event at the placement step to see the confirmation prompt. Use **Undo** or **Correct recipe state** to repair a mistake. Previous/Next browse cards only; they never complete a step or create a timer. Completion and AI events still require valid prerequisites.
+Try the 60% confidence event at the placement step to see the confirmation prompt. Use **Undo** or **Correct recipe state** to repair a mistake. Swipe the phone's recipe card left for the next step or right for the previous step. Swiping browses cards only; use **Mark done** to record completion. Navigation never completes a step or creates a timer. Completion and AI events still require valid prerequisites.
 
 Use **Add another timer** on the cooking screen for pasta, sauce, or a side dish. Up to eight extra timers can coexist with recipe timers and keep running across ordinary step completion. All timers persist; the glasses prioritize the nearest active deadline.
+
+## Import your own recipe
+
+Open **Import a recipe** and choose a written-recipe photo, public recipe webpage, or public YouTube video/Short. Tap **Break into steps**, review the extracted ingredients, full instructions, short glasses instructions, and timers, then **Save to my recipes**. Saved imports appear under **Start Recipe** and use the same cooking screen and swipe navigation as the bundled recipes.
+
+YouTube imports read the video's audio and visuals through Gemini 3.6 Flash. Photos and webpages use Gemini 3.5 Flash. Missing source details are flagged for review; videos containing several methods import the first complete version and identify it in the notes. Imported recipes use manual completion rather than generating new automatic camera-event detectors. See [recipe import setup, limits, and validation](docs/RECIPE_IMPORT.md).
 
 ## Architecture
 
@@ -60,7 +66,7 @@ Navigation/correction/undo invalidate in-flight analysis. Requests also carry a 
 - Follow [DAT setup and exact API reference](docs/DAT_0.9.0.md). It lists every verified 0.9.0 symbol and the physical acceptance checks. Use your signing team and Meta registration configuration; the checked-in `MetaAppID = 0` is for Meta Developer Mode.
 - Follow [backend setup](backend/README.md). Configure `GEMINI_API_KEY` and `COOKING_API_TOKEN` on the server; terminate HTTPS before exposing it to an iPhone.
 - In app Debug settings, enter the complete HTTPS `/v1/cooking/observe` endpoint and your backend bearer token. The token is memory-only. Turn off **Mock AI Events**, select physical glasses, connect, then explicitly start Watch.
-- Gemini is called with model `gemini-3.5-flash`. No live paid requests or deployment were performed during implementation.
+- Camera observations use `gemini-3.5-flash`; YouTube imports use `gemini-3.6-flash`. Live recipe imports have been checked through a local backend exposed with a temporary HTTPS tunnel. Keep the host running while testing; stable production hosting remains separate work.
 
 ## Verification
 
@@ -89,7 +95,7 @@ Timer expiration never declares food cooked or safe and never automatically comp
 ## Scope still requiring follow-through
 
 - Physical Meta glasses: pairing, permissions, real streaming, button interactions, layout, reconnect behavior, thermal/battery performance, and actual event accuracy.
-- Live Gemini: deploy/configure the backend, then evaluate real cooking sequences and tune thresholds.
+- Live Gemini: establish stable backend hosting, then evaluate real cooking sequences and tune observation thresholds.
 - **Scan Fridge** is an ingredient-selection fallback that suggests the bundled recipes; fridge photo recognition is not implemented in this cooking-flow MVP.
 - Notifications are scheduled locally when permission is granted. Phone-locked delivery and physical-glasses alerts need device testing.
 - The backend uses a shared demo bearer token and per-process limits; production multi-user identity and infrastructure are outside this MVP.

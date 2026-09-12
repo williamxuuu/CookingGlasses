@@ -16,23 +16,25 @@ struct CookingView: View {
                             Capsule().fill(session.completedStepIDs.contains(step.id) ? Palette.forest : (index == session.currentStepIndex ? Palette.orange : Palette.sage)).frame(height: 5)
                         }
                     }.accessibilityLabel("Step \(session.currentStepIndex + 1) of \(session.recipe.steps.count)")
-                    VStack(alignment: .leading, spacing: 16) {
-                        Eyebrow(text: "Step \(session.currentStepIndex + 1) / \(session.recipe.steps.count)")
-                        Text(session.currentStep.title).font(.system(size: 30, design: .serif))
-                        Text(session.currentStep.fullInstruction).font(.system(size: 18)).lineSpacing(5)
-                        if session.completedStepIDs.contains(session.currentStep.id) { Label("Step completed", systemImage: "checkmark.circle.fill").font(.caption).foregroundStyle(Palette.forest) }
-                        if session.isFinished { Label("Recipe steps complete — check food before serving", systemImage: "checkmark.seal").font(.subheadline) }
-                        Divider()
-                        HStack {
-                            Button { store.navigate(-1) } label: { Label("Previous", systemImage: "arrow.left") }.disabled(session.currentStepIndex == 0)
-                            Spacer()
-                            Button { store.navigate(1) } label: { HStack { Text("Next"); Image(systemName: "arrow.right") } }.disabled(session.currentStepIndex == session.recipe.steps.count - 1)
-                        }.font(.subheadline.weight(.semibold))
+                    VStack(alignment: .leading, spacing: 14) {
+                        RecipeStepPager(session: session) { index in
+                            guard let current = store.session else { return }
+                            store.navigate(index - current.currentStepIndex)
+                        }.id(session.id)
+                        if session.recipe.steps.count > 1 {
+                            HStack {
+                                Image(systemName: "chevron.left")
+                                Spacer()
+                                Text("Swipe left for next · right for previous")
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                            }.font(.caption).foregroundStyle(.secondary).accessibilityHidden(true)
+                        }
                         PrimaryButton(title: "Mark done", icon: "checkmark") { store.markDone() }.accessibilityIdentifier("mark_done").disabled(!session.currentStep.prerequisiteStepIDs.isSubset(of: session.completedStepIDs))
                         if !session.currentStep.prerequisiteStepIDs.isSubset(of: session.completedStepIDs) {
                             Text("Complete earlier steps first, or use Correct recipe state below.").font(.caption).foregroundStyle(.secondary)
                         }
-                    }.cookingCard()
+                    }
                     if let pending = session.pendingObservation {
                         VStack(alignment: .leading, spacing: 12) {
                             Label("A quick check", systemImage: "questionmark.bubble").font(.headline)
@@ -73,6 +75,56 @@ struct CookingView: View {
                     }.navigationTitle("Correct state").navigationBarTitleDisplayMode(.inline).toolbar { Button("Cancel") { showCorrection = false } }
                 }
             }
+    }
+}
+
+private struct RecipeStepPager: View {
+    let session: CookingSession
+    let select: (Int) -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        // The sizing card gives the native pager its current page's full height.
+        // Long instructions and larger text can still scroll vertically with the screen.
+        card(for: session.currentStepIndex)
+            .hidden()
+            .overlay {
+                TabView(selection: Binding(get: { session.currentStepIndex }, set: select)) {
+                    ForEach(session.recipe.steps.indices, id: \.self) { index in
+                        card(for: index)
+                            .frame(maxHeight: .infinity, alignment: .top)
+                            .tag(index)
+                    }
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .accessibilityIdentifier("recipe_step_pages")
+                .accessibilityHint("Swipe left for the next step, or right for the previous step.")
+                .accessibilityAction(named: "Next step") {
+                    select(min(session.currentStepIndex + 1, session.recipe.steps.count - 1))
+                }
+                .accessibilityAction(named: "Previous step") {
+                    select(max(session.currentStepIndex - 1, 0))
+                }
+            }
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: session.currentStepIndex)
+    }
+
+    private func card(for index: Int) -> some View {
+        let step = session.recipe.steps[index]
+        return VStack(alignment: .leading, spacing: 16) {
+            Eyebrow(text: "Step \(index + 1) / \(session.recipe.steps.count)")
+            Text(step.title).font(.system(size: 30, design: .serif)).accessibilityAddTraits(.isHeader)
+            Text(step.fullInstruction).font(.system(size: 18)).lineSpacing(5)
+            if session.completedStepIDs.contains(step.id) {
+                Label("Step completed", systemImage: "checkmark.circle.fill").font(.caption).foregroundStyle(Palette.forest)
+            }
+            if session.isFinished {
+                Label("Recipe steps complete — check food before serving", systemImage: "checkmark.seal").font(.subheadline)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .fixedSize(horizontal: false, vertical: true)
+        .cookingCard()
     }
 }
 

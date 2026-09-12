@@ -12,6 +12,10 @@ struct DebugCameraView: View {
                 LabeledContent("Native display", value: store.status.canRenderOnGlasses ? "Available" : "Phone preview")
                 Text(store.status.detail).font(.caption)
                 Button("Connect / reconnect") { Task { await store.reconnect() } }
+                if store.useRealGlasses {
+                    Button("Update Meta glasses app") { Task { await store.updateMetaGlassesApp() } }
+                    Text("Sous uses DAT 0.9. The Meta glasses app must support this version before a live session can start.").font(.caption)
+                }
                 if !store.useRealGlasses { Button("Simulate disconnect") { store.simulateDisconnect() } }
                 Button(store.watchRequested ? "Pause Cooking Watch" : "Start Cooking Watch") { Task { await store.toggleWatch() } }.disabled(store.session == nil)
             }

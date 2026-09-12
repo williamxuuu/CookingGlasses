@@ -1,5 +1,6 @@
 import { createGeminiClassifier } from './gemini.mjs';
 import { createObservationServer } from './server.mjs';
+import { createRecipeImporter } from './recipe-import.mjs';
 
 function integerEnv(name, fallback, min, max) {
   const value = process.env[name] ?? String(fallback);
@@ -19,6 +20,7 @@ try {
   const server = createObservationServer({
     bearerToken: process.env.COOKING_API_TOKEN,
     classify,
+    importRecipe: createRecipeImporter({ apiKey: process.env.GEMINI_API_KEY }),
     maxRequestsPerMinute: integerEnv('MAX_REQUESTS_PER_MINUTE', 30, 1, 600),
     maxConcurrentRequests: integerEnv('MAX_CONCURRENT_REQUESTS', 2, 1, 16),
   });

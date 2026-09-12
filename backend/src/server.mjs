@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { HTTPError, invalidRequest } from './errors.mjs';
 import { LIMITS, validateRequest, validateObservation } from './validation.mjs';
+import { validateImportRequest } from './recipe-import.mjs';
 
 function sendJSON(response, status, value, extraHeaders = {}) {
   if (response.destroyed || response.writableEnded) return;
@@ -56,7 +57,7 @@ function readBody(request) {
   });
 }
 
-export function createObservationServer({ bearerToken, classify, maxRequestsPerMinute = 30,
+export function createObservationServer({ bearerToken, classify, importRecipe, maxRequestsPerMinute = 30,
   maxConcurrentRequests = 2, now = () => Date.now() }) {
   if (typeof bearerToken !== 'string' || !/^[A-Za-z0-9._~+\/-]{32,256}$/u.test(bearerToken)) {
     throw new Error('COOKING_API_TOKEN must contain 32–256 token characters.');
@@ -81,7 +82,8 @@ export function createObservationServer({ bearerToken, classify, maxRequestsPerM
         sendJSON(response, 200, { status: 'ok' });
         return;
       }
-      if (request.url !== '/v1/cooking/observe') throw new HTTPError(404, 'not_found', 'Route not found.');
+      const isImport = request.url === '/v1/recipes/import' && typeof importRecipe === 'function';
+      if (request.url !== '/v1/cooking/observe' && !isImport) throw new HTTPError(404, 'not_found', 'Route not found.');
       if (request.method !== 'POST') {
         response.setHeader('Allow', 'POST');
         throw new HTTPError(405, 'method_not_allowed', 'Use POST for observations.');
@@ -116,8 +118,14 @@ export function createObservationServer({ bearerToken, classify, maxRequestsPerM
       if (declaredLength && Number(declaredLength) > LIMITS.maxBodyBytes) {
         throw new HTTPError(413, 'request_too_large', 'The request exceeds the 6 MiB limit.');
       }
-      const input = validateRequest(await readBody(request), now() / 1000);
+      const body = await readBody(request);
+      const input = isImport ? validateImportRequest(body) : validateRequest(body, now() / 1000);
       if (controller.signal.aborted) return;
+      if (isImport) {
+        const recipe = await importRecipe(input, { signal: controller.signal });
+        if (!controller.signal.aborted) sendJSON(response, 200, recipe);
+        return;
+      }
       const observation = await classify(input, { signal: controller.signal });
       if (!controller.signal.aborted) sendJSON(response, 200, validateObservation(observation, input));
     } catch (error) {

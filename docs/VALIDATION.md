@@ -2,7 +2,15 @@
 
 The implementation is validated at three separate levels. A passing simulator test cannot establish hardware behavior or vision accuracy.
 
-## Automated checks
+## Current additions · September 12, 2026
+
+- Recipe imports: **41 core tests and 25 backend tests passed**, covering validated drafts, source/review-note/glasses-text retention, timers, persistence compatibility, YouTube routing, retrieval evidence, authentication, bounds, cancellation, and service errors.
+- Signed iPhone builds passed for recipe importing and swipe navigation; the updated app was installed on the paired iPhone 17 Pro Max.
+- The 14 existing cooking-state tests passed after the swipe-navigation UI change. Native page swipes have not yet been exercised in an automated UI run.
+- Live photo and webpage recipe imports passed. A YouTube import through the phone's HTTPS backend returned 4 ingredients and 4 ordered steps in 5.3 seconds, preserved its source link, and identified the selected recipe variation in review notes. See [recipe import validation](RECIPE_IMPORT.md).
+- Physical glasses streaming/display remain unconfirmed. A captured SDK log reported an on-glasses developer component at 0.8.0.34.0 below DAT 0.9's required version; its current state needs a fresh device check.
+
+## Initial MVP checks
 
 - Xcode 26.6 simulator and unsigned physical-iPhone builds with real DAT 0.9.0 Core, Camera and Display packages: passed. The final simulator build was repeated after the independent-timer and layout changes.
 - Exact-tag DAT adapter/renderer direct typecheck: passed against the distributed 0.9.0 XCFramework interfaces.
@@ -26,4 +34,4 @@ Local build/test logs and `.xcresult` bundles are in the ignored `build/` direct
 6. Lock/background the phone, relaunch it after a timer expires, and validate local notification delivery and timer recovery.
 7. Measure sustained battery, thermals, latency, upload volume, false positives/negatives, and confidence prompting in representative kitchens.
 
-No physical glasses, live Gemini request, signing credentials, or deployment were available to validate these checks during implementation.
+The signed phone build and live recipe-import checks above do not establish physical glasses behavior or camera-event accuracy. These acceptance checks remain outstanding.

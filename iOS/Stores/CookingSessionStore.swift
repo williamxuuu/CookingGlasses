@@ -4,6 +4,7 @@ import UserNotifications
 
 @MainActor final class CookingSessionStore: ObservableObject {
     @Published private(set) var session: CookingSession?
+    @Published private(set) var importedRecipes: [Recipe] = []
     @Published private(set) var status = WearableStatus()
     @Published var errorMessage: String?
     @Published var mockAIEvents = true { didSet { invalidateInference() } }
@@ -21,6 +22,7 @@ import UserNotifications
     private(set) var wearables: any WearablesService
     private let stateMachine = RecipeStateMachine()
     private let persistence: SessionPersistence
+    private let recipeLibraryURL: URL
     private var processor = FrameProcessor()
     private var heartbeat: Timer?
     private var inference: Task<Void, Never>?
@@ -34,6 +36,16 @@ import UserNotifications
         let directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("CookingGlasses", isDirectory: true)
         persistence = SessionPersistence(url: directory.appendingPathComponent("session.json"))
+        recipeLibraryURL = directory.appendingPathComponent("imported-recipes.json")
+        if FileManager.default.fileExists(atPath: recipeLibraryURL.path) {
+            do {
+                let saved = try JSONDecoder().decode([Recipe].self, from: Data(contentsOf: recipeLibraryURL))
+                guard saved.count <= 100, saved.allSatisfy({ !$0.steps.isEmpty && Set($0.steps.map(\.id)).count == $0.steps.count }) else {
+                    throw RecipeImportError.message("The saved recipe library is invalid.")
+                }
+                importedRecipes = saved
+            } catch { errorMessage = "Your imported recipes could not be loaded: \(error.localizedDescription)" }
+        }
         do { session = try persistence.load() } catch { errorMessage = "Your saved session could not be read: \(error.localizedDescription)" }
         wireService()
         heartbeat = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
@@ -78,6 +90,22 @@ import UserNotifications
         noticeUntil = .distantPast
         session = CookingSession(recipe: recipe)
         persist(); renderGlasses()
+    }
+
+    func saveImportedRecipe(_ recipe: Recipe) throws {
+        guard importedRecipes.count < 100 else { throw RecipeImportError.message("Your library holds 100 recipes. Remove a saved recipe before adding another.") }
+        let updated = [recipe] + importedRecipes
+        try writeRecipeLibrary(updated)
+        importedRecipes = updated
+    }
+    func deleteImportedRecipe(_ id: String) {
+        let updated = importedRecipes.filter { $0.id != id }
+        do { try writeRecipeLibrary(updated); importedRecipes = updated }
+        catch { errorMessage = "The recipe could not be removed: \(error.localizedDescription)" }
+    }
+    private func writeRecipeLibrary(_ recipes: [Recipe]) throws {
+        try FileManager.default.createDirectory(at: recipeLibraryURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try JSONEncoder().encode(recipes).write(to: recipeLibraryURL, options: [.atomic, .completeFileProtection])
     }
     func navigate(_ offset: Int) { update { stateMachine.navigate(&$0, offset: offset) } }
     func markDone() { update { stateMachine.markDone(&$0, now: now) } }
@@ -168,6 +196,12 @@ import UserNotifications
     }
     func reconnect() async {
         do { try await wearables.connect(); lastRendered = nil; renderGlasses() }
+        catch { errorMessage = error.localizedDescription }
+    }
+
+    func updateMetaGlassesApp() async {
+        guard let service = wearables as? MetaWearablesService else { return }
+        do { try await service.openGlassesAppUpdate() }
         catch { errorMessage = error.localizedDescription }
     }
 

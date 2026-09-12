@@ -17,6 +17,7 @@
 		40DC690D2FDF508C860E347A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC5F43C9BEBA9A70CE8125DA /* Foundation.framework */; };
 		53200E8A9BA3AE66BEE4A2C6 /* CameraFrame+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B76542AF046141EC9C196F3 /* CameraFrame+Image.swift */; };
 		5938B7DD2F6BDF3C1EF71DD8 /* MWDATCamera in Frameworks */ = {isa = PBXBuildFile; productRef = E5416EFDB4DB6D1487FC959E /* MWDATCamera */; };
+		5C27CF5A6C22D26794DCE4F5 /* RecipeImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6581365B78D2B8B2226DB8 /* RecipeImportView.swift */; };
 		6B00A9692FA33EBFC6799FA8 /* RecipeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF869D83A9FE166F3F8590F /* RecipeListView.swift */; };
 		70898CA66B0BDEC92C7EB946 /* CookingCore in Frameworks */ = {isa = PBXBuildFile; productRef = FE990F1C710ABE133322D129 /* CookingCore */; };
 		78735A0A05742E87A8476865 /* SousChefApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDA475CFE3CE35634EB162DC /* SousChefApp.swift */; };
@@ -42,6 +43,7 @@
 
 /* Begin PBXFileReference section */
 		1F8D88D85EC9DF0B134C5D28 /* Components.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Components.swift; path = iOS/Views/Components.swift; sourceTree = "<group>"; };
+		5B6581365B78D2B8B2226DB8 /* RecipeImportView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RecipeImportView.swift; path = iOS/Views/RecipeImportView.swift; sourceTree = "<group>"; };
 		6A8CE9DBAE9FF4A0B53BD94B /* GlassesViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GlassesViewModel.swift; path = iOS/Wearables/GlassesViewModel.swift; sourceTree = "<group>"; };
 		6B76542AF046141EC9C196F3 /* CameraFrame+Image.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "CameraFrame+Image.swift"; path = "iOS/Services/CameraFrame+Image.swift"; sourceTree = "<group>"; };
 		6EE1A18410CE9EBE421F3F87 /* CookingFlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CookingFlowTests.swift; path = iOSUITests/CookingFlowTests.swift; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 				EFCED67583A02D8F585276B9 /* TimerListView.swift */,
 				EBDD6DC3E43A2293CD138E0A /* DATGlassesRenderer.swift */,
 				6A8CE9DBAE9FF4A0B53BD94B /* GlassesViewModel.swift */,
+				5B6581365B78D2B8B2226DB8 /* RecipeImportView.swift */,
 			);
 			name = iOS;
 			sourceTree = "<group>";
@@ -263,6 +266,7 @@
 				B91948541FDBF1A70CB75BE4 /* TimerListView.swift in Sources */,
 				25FB781535FC3D9665F24463 /* DATGlassesRenderer.swift in Sources */,
 				996C3630226BC32E7A5223C8 /* GlassesViewModel.swift in Sources */,
+				5C27CF5A6C22D26794DCE4F5 /* RecipeImportView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

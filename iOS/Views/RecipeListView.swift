@@ -10,7 +10,10 @@ struct RecipeListView: View {
             VStack(alignment: .leading, spacing: 20) {
                 Eyebrow(text: "Tonight, made simple")
                 Text("Something good\nis on the menu.").font(.system(size: 35, design: .serif))
-                ForEach(SampleRecipes.all, id: \.id) { recipe in
+                NavigationLink { RecipeImportView() } label: {
+                    Label("Import a photo, recipe or YouTube link", systemImage: "square.and.arrow.down").font(.headline).frame(maxWidth: .infinity, alignment: .leading).cookingCard()
+                }.accessibilityIdentifier("import_recipe")
+                ForEach(store.importedRecipes + SampleRecipes.all, id: \.id) { recipe in
                     Button { selection = recipe } label: {
                         VStack(alignment: .leading, spacing: 14) {
                             HStack {
@@ -23,6 +26,11 @@ struct RecipeListView: View {
                             HStack { Text("Let's cook").font(.subheadline.weight(.semibold)); Spacer(); Image(systemName: "arrow.up.right") }
                         }.cookingCard()
                     }.buttonStyle(.plain).accessibilityIdentifier("recipe_\(recipe.id)")
+                    .contextMenu {
+                        if store.importedRecipes.contains(where: { $0.id == recipe.id }) {
+                            Button("Delete saved recipe", role: .destructive) { store.deleteImportedRecipe(recipe.id) }
+                        }
+                    }
                 }
             }.padding(24)
         }.background(Palette.cream).navigationTitle("Recipes").navigationBarTitleDisplayMode(.inline).toolbar(.visible, for: .navigationBar)
@@ -31,7 +39,14 @@ struct RecipeListView: View {
                     List {
                         Section { Text(recipe.title).font(.title2.weight(.semibold)); Text(recipe.subtitle) }
                         Section("What you'll need") { ForEach(recipe.ingredients, id: \.self) { Text($0) } }
-                        Section { Text("Chicken requires a food thermometer reading of 165°F / 74°C. Camera observations and timers never determine safe doneness.").font(.footnote) }
+                        if let url = recipe.sourceURL, let source = URL(string: url) { Section { Link("Original recipe", destination: source) } }
+                        if let notes = recipe.importNotes, !notes.isEmpty { Section("Review notes") { ForEach(notes, id: \.self) { Text($0) } } }
+                        Section("Steps") {
+                            ForEach(Array(recipe.steps.enumerated()), id: \.element.id) { index, step in
+                                VStack(alignment: .leading) { Text("\(index + 1). \(step.title)").font(.headline); Text(step.fullInstruction) }
+                            }
+                        }
+                        Section { Text("Use the recipe's food-safety guidance and a food thermometer where appropriate. Camera observations and timers never determine safe doneness.").font(.footnote) }
                         if store.session != nil { Section { Text("Starting this recipe replaces your current cooking session and its timers.").foregroundStyle(Palette.orange) } }
                         Section {
                             Button("Start cooking") { store.startRecipe(recipe); selection = nil; showCooking = true }.font(.headline).accessibilityIdentifier("begin_cooking")

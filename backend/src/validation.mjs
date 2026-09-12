@@ -41,7 +41,7 @@ function finite(value) {
 
 // Inspect the JPEG header without retaining or decoding image pixels. This is a
 // bounded format/dimension sanity check; the model provider still decodes it.
-function validJPEGHeader(bytes) {
+export function validJPEGHeader(bytes, maximumDimension = LIMITS.maxImageDimension) {
   if (bytes.length < 12 || bytes[0] !== 0xff || bytes[1] !== 0xd8
       || bytes.at(-2) !== 0xff || bytes.at(-1) !== 0xd9) return false;
   let offset = 2;
@@ -62,8 +62,8 @@ function validJPEGHeader(bytes) {
       if (length < 8) return false;
       const height = bytes.readUInt16BE(offset + 3);
       const width = bytes.readUInt16BE(offset + 5);
-      if (width === 0 || height === 0 || width > LIMITS.maxImageDimension
-          || height > LIMITS.maxImageDimension) return false;
+      if (width === 0 || height === 0 || width > maximumDimension
+          || height > maximumDimension) return false;
       hasDimensions = true;
     }
     offset += length;

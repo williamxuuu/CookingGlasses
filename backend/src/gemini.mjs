@@ -38,7 +38,7 @@ export function buildGeminiRequest(request) {
   };
 }
 
-async function readResponse(response) {
+export async function readResponse(response, maximumBytes = LIMITS.maxUpstreamBytes) {
   if (!response.body) throw invalidUpstream();
   const reader = response.body.getReader();
   const chunks = [];
@@ -48,7 +48,7 @@ async function readResponse(response) {
       const { done, value } = await reader.read();
       if (done) break;
       size += value.byteLength;
-      if (size > LIMITS.maxUpstreamBytes) {
+      if (size > maximumBytes) {
         await reader.cancel();
         throw invalidUpstream();
       }
