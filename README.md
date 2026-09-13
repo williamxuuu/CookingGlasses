@@ -13,6 +13,8 @@ Open **CookingGlasses.xcodeproj**, select the **CookingGlasses** scheme, and run
 
 ## First complete mock demo
 
+For a minimal camera trial, choose **Water, Boil & Spoon Test** at the top of Recipes. It is one step with three ordered checkpoints and no timer. See [setup and validation](docs/WATER_STREAM_TEST.md).
+
 1. Tap **Start Recipe → Pan-Seared Chicken → Start cooking**.
 2. Mark **Season chicken** and **Heat the pan** done. The current step is now **Add chicken to the pan**.
 3. Open the sliders button (**Debug & settings**) and tap **Start Cooking Watch**. Leave **Mock AI Events** enabled.

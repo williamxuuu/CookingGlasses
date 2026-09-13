@@ -1,0 +1,167 @@
+{
+  "sourceURL": "https://www.youtube.com/watch?v=eElmEOGtJ98",
+  "model": "gemini-3.6-flash",
+  "startedAt": "2026-09-12T23:50:18.449Z",
+  "elapsedSeconds": 94.18,
+  "requestedFPS": 2,
+  "usageMetadata": {
+    "promptTokenCount": 9689,
+    "candidatesTokenCount": 1595,
+    "totalTokenCount": 11284,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 271
+      },
+      {
+        "modality": "VIDEO",
+        "tokenCount": 9418
+      }
+    ],
+    "serviceTier": "standard"
+  },
+  "analysis": {
+    "videoAccessible": true,
+    "summary": "A POV camera shows a chef in a busy restaurant kitchen preparing, cooking, and plating multiple dishes including pasta, steak, and sides.",
+    "approximateDurationSeconds": 60,
+    "events": [
+      {
+        "startSeconds": 0,
+        "endSeconds": 3,
+        "action": "Chef garnishes pasta with herbs and lemon wedge.",
+        "visibleEvidence": "Hands placing leafy greens and lemon wedge on plated pasta.",
+        "evidenceSource": "visual",
+        "eventLabel": "garnish_pasta",
+        "confidence": 0.95,
+        "possibleAppResponse": "Check pasta garnish complete.",
+        "limitations": "Hands obscure plate center during placement."
+      },
+      {
+        "startSeconds": 3,
+        "endSeconds": 6,
+        "action": "Chef wipes plate edge and places it on pass shelf.",
+        "visibleEvidence": "Blue cloth wiping plate rim, followed by hand placing plate on pass.",
+        "evidenceSource": "visual",
+        "eventLabel": "pass_plate",
+        "confidence": 0.9,
+        "possibleAppResponse": "Mark pasta dish ready for service.",
+        "limitations": "Camera shifts rapidly during movement to pass."
+      },
+      {
+        "startSeconds": 7,
+        "endSeconds": 9.5,
+        "action": "Chef grabs seafood/ingredients from containers and drops into pans.",
+        "visibleEvidence": "Hand reaching into prep tubs and placing ingredients into hot pans on burners.",
+        "evidenceSource": "visual",
+        "eventLabel": "add_ingredients_to_pan",
+        "confidence": 0.9,
+        "possibleAppResponse": "Confirm ingredients added to skillet.",
+        "limitations": "Fast movement causes slight motion blur."
+      },
+      {
+        "startSeconds": 9.5,
+        "endSeconds": 14,
+        "action": "Chef sautes pan contents over high flame causing flambé.",
+        "visibleEvidence": "Tossing pan contents with tongs over open gas flames creating fire bursts.",
+        "evidenceSource": "visual",
+        "eventLabel": "saute_flambe",
+        "confidence": 0.95,
+        "possibleAppResponse": "Monitor sauté stage.",
+        "limitations": "Flames cover pan surface partially obscuring contents."
+      },
+      {
+        "startSeconds": 14.5,
+        "endSeconds": 17.5,
+        "action": "Chef opens oven and places vegetables alongside steak pan.",
+        "visibleEvidence": "Hand opening stove oven, placing a small dish of green vegetables next to skillet inside.",
+        "evidenceSource": "visual",
+        "eventLabel": "place_in_oven",
+        "confidence": 0.9,
+        "possibleAppResponse": "Track oven cooking step.",
+        "limitations": "Oven interior is dark."
+      },
+      {
+        "startSeconds": 18,
+        "endSeconds": 23.5,
+        "action": "Chef pours cream sauce into multiple pans on burner.",
+        "visibleEvidence": "Carton of cream being poured directly into bubbling pans.",
+        "evidenceSource": "visual",
+        "eventLabel": "add_cream_sauce",
+        "confidence": 0.95,
+        "possibleAppResponse": "Confirm liquid added to sauce.",
+        "limitations": "Steam partially obscures pan surface."
+      },
+      {
+        "startSeconds": 24,
+        "endSeconds": 27.5,
+        "action": "Chef swirls and tosses pan contents to reduce sauce.",
+        "visibleEvidence": "Hand gripping pan handle with towel and shaking pan rapidly over flame.",
+        "evidenceSource": "visual",
+        "eventLabel": "swirl_sauce",
+        "confidence": 0.9,
+        "possibleAppResponse": "Simmer and reduce sauce.",
+        "limitations": "Vigorously moving pans create blur."
+      },
+      {
+        "startSeconds": 30.5,
+        "endSeconds": 33.5,
+        "action": "Chef tosses pasta and ingredients in skillet.",
+        "visibleEvidence": "Hand flipping pasta back and forth in frying pan.",
+        "evidenceSource": "visual",
+        "eventLabel": "toss_pasta",
+        "confidence": 0.9,
+        "possibleAppResponse": "Combine pasta with sauce.",
+        "limitations": "High speed movement."
+      },
+      {
+        "startSeconds": 34,
+        "endSeconds": 40.5,
+        "action": "Chef plates cooked steak and vegetables.",
+        "visibleEvidence": "Using tongs to arrange green vegetables and steak onto plate.",
+        "evidenceSource": "visual",
+        "eventLabel": "plate_steak",
+        "confidence": 0.95,
+        "possibleAppResponse": "Steak plating under way.",
+        "limitations": "First-person angle partially blocks lower plate view."
+      },
+      {
+        "startSeconds": 41.5,
+        "endSeconds": 45,
+        "action": "Chef adds garnish to steak plate and places on pass.",
+        "visibleEvidence": "Placing microgreens on top of steak and handing plate off.",
+        "evidenceSource": "visual",
+        "eventLabel": "garnish_steak",
+        "confidence": 0.9,
+        "possibleAppResponse": "Mark steak dish complete.",
+        "limitations": "Quick transition to wide kitchen view."
+      },
+      {
+        "startSeconds": 47,
+        "endSeconds": 53,
+        "action": "Chef plates cooked steak, sides, and pasta across multiple dishes.",
+        "visibleEvidence": "Chef transferring steak from pan to plate and pouring cooked pasta from pan into bowls.",
+        "evidenceSource": "visual",
+        "eventLabel": "plate_multiple_dishes",
+        "confidence": 0.95,
+        "possibleAppResponse": "Assist with multi-dish plating line.",
+        "limitations": "Station perspective captures multiple workers simultaneously."
+      },
+      {
+        "startSeconds": 53.5,
+        "endSeconds": 58.5,
+        "action": "Chef garnishes final pasta dish and wipes plate rim.",
+        "visibleEvidence": "Placing herbs and lemon wedge, wiping edge with towel.",
+        "evidenceSource": "visual",
+        "eventLabel": "final_garnish_and_clean",
+        "confidence": 0.95,
+        "possibleAppResponse": "Finish plating final order.",
+        "limitations": "Close-up hand movements."
+      }
+    ],
+    "explicitCookingDurations": [],
+    "uncertainties": [
+      "Specific ingredient identities (spices, sauces, cut of meat) are not explicitly labelled."
+    ]
+  },
+  "validation": "Single full-video model response. Timestamps and events have not been independently verified. Confidence values are model estimates, not measured accuracy."
+}

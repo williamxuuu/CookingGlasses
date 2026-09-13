@@ -7,6 +7,9 @@ public enum CookingEvent: String, Codable, CaseIterable, Sendable {
     case potPlacedOnStove = "pot_placed_on_stove"
     case pastaAddedToWater = "pasta_added_to_water"
     case ingredientAdded = "ingredient_added"
+    case waterAddedToPot = "water_added_to_pot"
+    case waterRollingBoil = "water_rolling_boil"
+    case woodenSpoonInserted = "wooden_spoon_inserted"
     case uncertain
     case noRelevantEvent = "no_relevant_event"
 
@@ -18,8 +21,29 @@ public enum CookingEvent: String, Codable, CaseIterable, Sendable {
         case .potPlacedOnStove: return "Did you just place the pot on the stove?"
         case .pastaAddedToWater: return "Did you just add pasta to the water?"
         case .ingredientAdded: return "Did you just add the ingredient?"
+        case .waterAddedToPot: return "Did you just put water into the pot?"
+        case .waterRollingBoil: return "Has the water reached a rolling boil?"
+        case .woodenSpoonInserted: return "Did you just put the wooden spoon into the pot?"
         case .uncertain: return "Has the current step happened?"
         case .noRelevantEvent: return "Has the current step happened?"
+        }
+    }
+
+    public var displayName: String {
+        switch self {
+        case .waterAddedToPot: return "Water added to pot"
+        case .waterRollingBoil: return "Rolling boil detected"
+        case .woodenSpoonInserted: return "Wooden spoon inserted"
+        default: return rawValue.replacingOccurrences(of: "_", with: " ").capitalized
+        }
+    }
+
+    public var watchInstruction: String {
+        switch self {
+        case .waterAddedToPot: return "Add water to the pot."
+        case .waterRollingBoil: return "Wait for a rolling boil."
+        case .woodenSpoonInserted: return "Put the wooden spoon in."
+        default: return displayName
         }
     }
 }
@@ -59,11 +83,13 @@ public struct RecipeStep: Codable, Equatable, Identifiable, Sendable {
     public var prerequisiteStepIDs: Set<String>
     public var requiresContinuousAttention: Bool
     public var allowsAutomaticProgression: Bool
+    /// Optional ordered checkpoints within one recipe step. Missing in older saved recipes.
+    public var requiredEventSequence: [CookingEvent]?
 
     public init(id: String, title: String, fullInstruction: String, glassesInstruction: String,
                 expectedEvents: Set<CookingEvent> = [], optionalTimer: TimerSpecification? = nil,
                 prerequisiteStepIDs: Set<String> = [], requiresContinuousAttention: Bool = false,
-                allowsAutomaticProgression: Bool = false) {
+                allowsAutomaticProgression: Bool = false, requiredEventSequence: [CookingEvent]? = nil) {
         self.id = id
         self.title = title
         self.fullInstruction = fullInstruction
@@ -73,6 +99,7 @@ public struct RecipeStep: Codable, Equatable, Identifiable, Sendable {
         self.prerequisiteStepIDs = prerequisiteStepIDs
         self.requiresContinuousAttention = requiresContinuousAttention
         self.allowsAutomaticProgression = allowsAutomaticProgression
+        self.requiredEventSequence = requiredEventSequence
     }
 }
 
@@ -199,6 +226,29 @@ public struct CookingSession: Codable, Equatable, Identifiable, Sendable {
     }
 
     public var canUndo: Bool { undoSnapshot != nil }
+
+    public func observedAt(_ event: CookingEvent, stepID: String? = nil) -> Date? {
+        acceptedObservations["\(stepID ?? currentStep.id)|\(event.rawValue)"]
+    }
+
+    public var expectedEvents: Set<CookingEvent> {
+        guard !completedStepIDs.contains(currentStep.id) else { return [] }
+        if let sequence = currentStep.requiredEventSequence, !sequence.isEmpty {
+            guard let next = sequence.first(where: { observedAt($0) == nil }) else { return [] }
+            return [next]
+        }
+        return currentStep.expectedEvents
+    }
+
+    /// Send only the next checkpoint to vision while preserving the single-step recipe.
+    public var visionStep: RecipeStep {
+        var step = currentStep
+        step.expectedEvents = expectedEvents
+        if let sequence = step.requiredEventSequence, !sequence.isEmpty, let next = expectedEvents.first {
+            step.fullInstruction += " Current checkpoint: \(next.watchInstruction) Report only this checkpoint when visibly supported. Earlier checkpoints are already recorded."
+        }
+        return step
+    }
 }
 
 /// A single nonrecursive snapshot includes timer deadlines, preserving exact undo semantics.

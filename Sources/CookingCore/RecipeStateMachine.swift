@@ -140,7 +140,7 @@ public struct RecipeStateMachine: Sendable {
             return "No definite cooking action observed"
         }
         let step = session.currentStep
-        guard step.expectedEvents.contains(observation.event) else { return "Event is not expected for this step" }
+        guard session.expectedEvents.contains(observation.event) else { return "Event is not expected for this checkpoint" }
         guard step.prerequisiteStepIDs.isSubset(of: session.completedStepIDs) else {
             return "Required earlier steps are incomplete"
         }
@@ -159,6 +159,16 @@ public struct RecipeStateMachine: Sendable {
     private func perform(_ observation: CookingObservation, in session: inout CookingSession) {
         session.undoSnapshot = SessionSnapshot(session)
         let step = session.currentStep
+        if let sequence = step.requiredEventSequence, !sequence.isEmpty,
+           observation.event != sequence.last {
+            // An intermediate checkpoint records evidence without completing this step.
+            session.acceptedObservations[evidenceKey(stepID: step.id, event: observation.event)] = observation.estimatedEventTimestamp
+            session.observationNotBefore = max(session.observationNotBefore, observation.estimatedEventTimestamp)
+            session.revision += 1
+            invalidatePending(&session)
+            session.lastAction = observation.event.displayName
+            return
+        }
         recordCompletion(step, observation: observation, in: &session)
 
         // Waiting on a timer must not hide the upcoming action. If the immediately
@@ -182,6 +192,7 @@ public struct RecipeStateMachine: Sendable {
         case .chickenAddedToPan: session.lastAction = "Chicken added"
         case .chickenFlipped: session.lastAction = "Chicken flipped"
         case .chickenRemovedFromPan: session.lastAction = "Chicken removed — verify 165°F / 74°C"
+        case .waterAddedToPot, .waterRollingBoil, .woodenSpoonInserted: session.lastAction = observation.event.displayName
         default: session.lastAction = "\(step.title) detected"
         }
     }

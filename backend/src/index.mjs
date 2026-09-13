@@ -20,6 +20,7 @@ try {
   const server = createObservationServer({
     bearerToken: process.env.COOKING_API_TOKEN,
     classify,
+    onDiagnostic: (record) => console.info(JSON.stringify(record)),
     importRecipe: createRecipeImporter({ apiKey: process.env.GEMINI_API_KEY }),
     maxRequestsPerMinute: integerEnv('MAX_REQUESTS_PER_MINUTE', 30, 1, 600),
     maxConcurrentRequests: integerEnv('MAX_CONCURRENT_REQUESTS', 2, 1, 16),

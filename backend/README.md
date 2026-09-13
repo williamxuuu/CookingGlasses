@@ -1,6 +1,6 @@
 # Cooking Glasses observation backend
 
-A Node.js 22+ server with no npm dependencies. It accepts a short, chronological JPEG sequence and current recipe context, asks Gemini 3.5 Flash for one structured observation, validates the result, and returns it to the iOS app. Recipe progression and timers stay in the app.
+A Node.js 22+ server with no npm dependencies. It accepts a short, chronological JPEG sequence and current recipe context, asks Gemini 3.6 Flash for one structured observation, validates the result, and returns it to the iOS app. Recipe progression and timers stay in the app. Photo/web recipe imports keep their separate model configuration.
 
 ## Run locally
 

@@ -18,7 +18,9 @@ struct GlassesViewModel: Equatable {
             .sorted { $0.targetEndTime < $1.targetEndTime }
         let nearest = timers.first(where: { $0.isExpired(at: now) }) ?? timers.first(where: { !$0.isPaused }) ?? timers.first
         return .init(stepNumber: session.currentStepIndex + 1, totalSteps: session.recipe.steps.count,
-                     instruction: session.currentStep.glassesInstruction,
+                     instruction: session.currentStep.requiredEventSequence?.isEmpty == false
+                        ? (session.isFinished ? "Test step complete." : session.expectedEvents.first?.watchInstruction ?? session.currentStep.glassesInstruction)
+                        : session.currentStep.glassesInstruction,
                      timerLabel: nearest?.label, timerRemaining: nearest?.remaining(at: now),
                      additionalTimerCount: max(0, timers.count - 1), watchActive: watchActive,
                      notice: session.lastAction, expiredTimerID: nearest.flatMap { $0.isExpired(at: now) ? $0.id : nil },

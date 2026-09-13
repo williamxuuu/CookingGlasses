@@ -1,6 +1,38 @@
 import XCTest
 
 final class CookingFlowTests: XCTestCase {
+    func testWaterBoilSpoonCheckpoints() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launch()
+        let start = app.buttons["start_recipe"]
+        XCTAssertTrue(start.waitForExistence(timeout: 10))
+        if !start.isHittable { app.swipeUp() }
+        start.tap()
+        app.buttons["recipe_water-boil-spoon-test"].tap()
+        let begin = app.buttons["begin_cooking"]
+        if !begin.isHittable { app.swipeUp() }
+        begin.tap()
+        XCTAssertTrue(app.staticTexts["Fill, boil, then add the spoon"].waitForExistence(timeout: 10))
+        attach(app, name: "Water test before observations")
+        app.buttons["open_debug"].tap()
+        app.buttons["Start Cooking Watch"].tap()
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        if springboard.alerts.firstMatch.waitForExistence(timeout: 3) { springboard.alerts.buttons["Allow"].tap() }
+        let water = app.buttons["Water added to pot"]
+        if !water.isHittable { app.swipeUp() }
+        XCTAssertTrue(water.waitForExistence(timeout: 10))
+        water.tap()
+        XCTAssertTrue(app.staticTexts["Accepted · state updated"].waitForExistence(timeout: 5))
+        app.buttons["Rolling boil detected"].tap()
+        XCTAssertTrue(app.staticTexts["Accepted · state updated"].waitForExistence(timeout: 5))
+        app.buttons["Wooden spoon inserted"].tap()
+        XCTAssertTrue(app.staticTexts["Accepted · state updated"].waitForExistence(timeout: 5))
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.staticTexts["Step completed"].waitForExistence(timeout: 5))
+        attach(app, name: "Water test after all observations")
+    }
+
     func testChickenPlacementFlipAndReconnect() throws {
         continueAfterFailure = false
         let app = XCUIApplication()
@@ -9,7 +41,9 @@ final class CookingFlowTests: XCTestCase {
         let start = app.buttons["start_recipe"]
         if !start.isHittable { app.swipeUp() }
         XCTAssertTrue(start.waitForExistence(timeout: 10)); start.tap()
-        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "recipe_")).firstMatch.tap()
+        let chicken = app.buttons["recipe_pan-seared-chicken"]
+        if !chicken.isHittable { app.swipeUp() }
+        chicken.tap()
         let begin = app.buttons["begin_cooking"]
         if !begin.isHittable { app.swipeUp() }
         begin.tap()

@@ -13,6 +13,9 @@ import UserNotifications
     @Published var latestFrame: UIImage?
     @Published private(set) var frameChangeScore: Double = 0
     @Published private(set) var lastAIRequest: Date?
+    @Published private(set) var lastFrameReceived: Date?
+    @Published private(set) var lastVisionFailure: String?
+    @Published private(set) var lastVisionLatency: TimeInterval?
     @Published private(set) var latestObservation: CookingObservation?
     @Published private(set) var lastObservationResult = "No observations yet"
     @Published var backendURL = UserDefaults.standard.string(forKey: "backendURL") ?? ""
@@ -47,6 +50,18 @@ import UserNotifications
             } catch { errorMessage = "Your imported recipes could not be loaded: \(error.localizedDescription)" }
         }
         do { session = try persistence.load() } catch { errorMessage = "Your saved session could not be read: \(error.localizedDescription)" }
+        #if DEBUG
+        // Development-only launch configuration, supplied in the process environment.
+        // No backend token is compiled into the app or written to preferences.
+        let environment = ProcessInfo.processInfo.environment
+        if environment["SOUS_LIVE_TEST_SETUP"] == "1" {
+            backendURL = environment["SOUS_BACKEND_URL"] ?? backendURL
+            backendToken = environment["SOUS_BACKEND_TOKEN"] ?? ""
+            mockAIEvents = false
+            useRealGlasses = true
+            wearables = MetaWearablesService()
+        }
+        #endif
         wireService()
         heartbeat = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.tick() }
@@ -87,6 +102,8 @@ import UserNotifications
 
     func startRecipe(_ recipe: Recipe) {
         invalidateInference()
+        latestObservation = nil; lastAIRequest = nil; lastVisionLatency = nil
+        lastObservationResult = "No observations yet"
         noticeUntil = .distantPast
         session = CookingSession(recipe: recipe)
         persist(); renderGlasses()
@@ -207,7 +224,7 @@ import UserNotifications
 
     func inject(_ event: CookingEvent, confidence: Double = 0.96) {
         guard mockAIEvents, watchRequested, status.isMonitoring, var value = session else { return }
-        let observation = CookingObservation(event: event, ingredient: "chicken", confidence: confidence, estimatedEventTimestamp: Date())
+        let observation = CookingObservation(event: event, confidence: confidence, estimatedEventTimestamp: Date())
         latestObservation = observation
         let result = stateMachine.apply(observation, to: &value, now: Date())
         if result == .accepted { noticeUntil = Date().addingTimeInterval(8) }
@@ -226,10 +243,12 @@ import UserNotifications
     }
     private func receive(_ frame: CameraFrame) {
         guard watchRequested, status.isMonitoring, let current = session else { return }
+        lastFrameReceived = frame.timestamp
         if retainDebugFrame { latestFrame = UIImage(data: frame.jpegData) }
-        let expects = !current.currentStep.expectedEvents.isEmpty
+        let expects = !current.expectedEvents.isEmpty
         let timerWaiting = current.currentStep.optionalTimer != nil && !current.currentStep.requiresContinuousAttention
-        let sequence = processor.receive(frame, expectsAction: expects, timerWaiting: timerWaiting)
+        let sequence = processor.receive(frame, expectsAction: expects, timerWaiting: timerWaiting,
+                                         periodicCheckInterval: current.currentStep.requiredEventSequence?.isEmpty == false ? 8 : nil)
         frameChangeScore = processor.changeScore
         guard let sequence else { return }
         if mockAIEvents { processor.finishRequest(); return }
@@ -237,23 +256,35 @@ import UserNotifications
             processor.finishRequest(); lastObservationResult = "Configure the HTTPS backend and access token in Debug."; return
         }
         lastAIRequest = frame.timestamp
+        lastObservationResult = "Checking recent frames…"
+        let requestStarted = Date()
         let generation = inferenceGeneration, sessionID = current.id, revision = current.revision
         let service = GeminiCookingVisionService(endpoint: url, accessToken: backendToken)
-        let request = CookingVisionRequest(recipe: current.recipe, step: current.currentStep, frames: sequence)
+        let request = CookingVisionRequest(recipe: current.recipe, step: current.visionStep, frames: sequence)
         inference = Task { [weak self] in
             do {
                 let observation = try await service.observe(request)
                 guard let self, !Task.isCancelled, self.inferenceGeneration == generation,
                       self.watchRequested, self.status.isMonitoring, var value = self.session, value.id == sessionID else { return }
                 self.latestObservation = observation
+                self.lastVisionLatency = Date().timeIntervalSince(requestStarted)
                 let result = self.stateMachine.apply(observation, to: &value, now: Date(), expectedRevision: revision)
                 if result == .accepted { self.noticeUntil = Date().addingTimeInterval(8) }
                 self.lastObservationResult = self.describe(result)
+                #if DEBUG
+                print("[CookingWatch] event=\(observation.event.rawValue) confidence=\(observation.confidence) eventTime=\(observation.estimatedEventTimestamp.timeIntervalSince1970) latency=\(self.lastVisionLatency ?? 0) result=\(self.lastObservationResult)")
+                #endif
                 self.session = value; self.processor.finishRequest(); self.persist(); self.renderGlasses()
             } catch {
                 guard let self, self.inferenceGeneration == generation, !Task.isCancelled else { return }
                 self.processor.finishRequest()
-                self.lastObservationResult = "Vision unavailable · manual controls still work"
+                self.lastVisionLatency = Date().timeIntervalSince(requestStarted)
+                let reason = GeminiCookingVisionService.failureDescription(error)
+                self.lastObservationResult = reason
+                self.lastVisionFailure = "\(Date().formatted(date: .omitted, time: .standard)): \(reason)"
+                #if DEBUG
+                print("[CookingWatch] failure=\(reason) latency=\(self.lastVisionLatency ?? 0)")
+                #endif
             }
         }
     }

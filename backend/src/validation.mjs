@@ -7,6 +7,9 @@ export const EVENTS = Object.freeze([
   'pot_placed_on_stove',
   'pasta_added_to_water',
   'ingredient_added',
+  'water_added_to_pot',
+  'water_rolling_boil',
+  'wooden_spoon_inserted',
   'uncertain',
   'no_relevant_event',
 ]);

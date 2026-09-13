@@ -21,19 +21,22 @@ struct DebugCameraView: View {
             }
             Section("Event simulator") {
                 Toggle("Mock AI Events", isOn: $store.mockAIEvents)
-                Text("Start Cooking Watch, then mark Season and Heat pan done. Trigger chicken added to advance and start the 5-minute timer. Trigger flip to start the 4-minute timer.").font(.caption)
-                ForEach([CookingEvent.chickenAddedToPan, .chickenFlipped, .chickenRemovedFromPan], id: \.rawValue) { event in
-                    Button(event.rawValue.replacingOccurrences(of: "_", with: " ").capitalized) { store.inject(event) }.disabled(!store.mockAIEvents || !store.status.isMonitoring)
+                Text("These buttons simulate observations. For the live water test, turn Mock AI Events off and use the real camera.").font(.caption)
+                ForEach(store.session?.currentStep.requiredEventSequence ?? [CookingEvent.chickenAddedToPan, .chickenFlipped, .chickenRemovedFromPan], id: \.rawValue) { event in
+                    Button(event.displayName) { store.inject(event) }.disabled(!store.mockAIEvents || !store.status.isMonitoring)
                 }
                 Button("Simulate uncertain placement (60%)") { store.inject(.chickenAddedToPan, confidence: 0.60) }.disabled(!store.mockAIEvents || !store.status.isMonitoring)
                 Text(store.lastObservationResult).font(.caption)
             }
             Section("Vision diagnostics") {
+                if let failure = store.lastVisionFailure { Text("Last failure: \(failure)").font(.caption) }
                 LabeledContent("Scene change", value: String(format: "%.3f", store.frameChangeScore))
                 LabeledContent("Last AI request", value: store.lastAIRequest?.formatted(date: .omitted, time: .standard) ?? "None")
+                LabeledContent("Last camera frame", value: store.lastFrameReceived?.formatted(date: .omitted, time: .standard) ?? "None")
+                LabeledContent("Last request duration", value: store.lastVisionLatency.map { String(format: "%.1f s", $0) } ?? "—")
                 LabeledContent("Latest event", value: store.latestObservation?.event.rawValue ?? "None")
                 LabeledContent("Confidence", value: store.latestObservation.map { String(format: "%.0f%%", $0.confidence * 100) } ?? "—")
-                LabeledContent("Expected", value: store.session?.currentStep.expectedEvents.map(\.rawValue).sorted().joined(separator: ", ") ?? "None")
+                LabeledContent("Expected", value: store.session?.expectedEvents.map(\.rawValue).sorted().joined(separator: ", ") ?? "None")
                 LabeledContent("Recipe state", value: store.session?.currentStep.id ?? "No session")
                 LabeledContent("Revision", value: String(store.session?.revision ?? 0))
                 Toggle("Preview latest frame in memory", isOn: $store.retainDebugFrame)

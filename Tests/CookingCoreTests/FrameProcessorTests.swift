@@ -19,6 +19,26 @@ final class FrameProcessorTests: XCTestCase {
         XCTAssertLessThanOrEqual(processor.frames.count, 8)
     }
 
+    func testOptedInQuietSceneChecksRemainBoundedAndWaitForPriorRequest() {
+        var processor = FrameProcessor()
+        for second in 0..<8 {
+            XCTAssertNil(processor.receive(frame(100, at: Double(second)), expectsAction: true, timerWaiting: false, periodicCheckInterval: 8))
+        }
+        XCTAssertNotNil(processor.receive(frame(100, at: 8), expectsAction: true, timerWaiting: false, periodicCheckInterval: 8))
+        XCTAssertEqual(processor.changeScore, 0)
+        for second in 9...20 {
+            XCTAssertNil(processor.receive(frame(100, at: Double(second)), expectsAction: true, timerWaiting: false, periodicCheckInterval: 8))
+            XCTAssertLessThanOrEqual(processor.frames.count, 8)
+        }
+        processor.finishRequest()
+        XCTAssertNil(processor.receive(frame(100, at: 21), expectsAction: true, timerWaiting: false, periodicCheckInterval: 8))
+        XCTAssertNotNil(processor.receive(frame(100, at: 22), expectsAction: true, timerWaiting: false, periodicCheckInterval: 8))
+        processor.reset()
+        for second in 0...20 {
+            XCTAssertNil(processor.receive(frame(100, at: Double(second)), expectsAction: false, timerWaiting: false, periodicCheckInterval: 8))
+        }
+    }
+
     func testMeaningfulChangeRequiresTwoFramesAndExpectedAction() {
         var processor = FrameProcessor()
         XCTAssertNil(processor.receive(frame(0, at: 0), expectsAction: false, timerWaiting: false))

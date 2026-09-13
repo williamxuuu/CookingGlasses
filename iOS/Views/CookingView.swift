@@ -21,6 +21,28 @@ struct CookingView: View {
                             guard let current = store.session else { return }
                             store.navigate(index - current.currentStepIndex)
                         }.id(session.id)
+                        if let checkpoints = session.currentStep.requiredEventSequence, !checkpoints.isEmpty {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Live checkpoints").font(.headline)
+                                ForEach(checkpoints, id: \.rawValue) { event in
+                                    HStack {
+                                        Image(systemName: session.observedAt(event) != nil ? "checkmark.circle.fill" : "circle")
+                                            .foregroundStyle(session.observedAt(event) != nil ? Palette.forest : Palette.ink.opacity(0.4))
+                                        Text(event.displayName)
+                                        Spacer()
+                                        if let time = session.observedAt(event) {
+                                            Text(time.formatted(date: .omitted, time: .standard)).font(.caption).monospacedDigit()
+                                        }
+                                    }.accessibilityIdentifier("checkpoint_\(event.rawValue)")
+                                }
+                                if let next = session.expectedEvents.first { Text("Watching for: \(next.watchInstruction)").font(.subheadline.weight(.medium)) }
+                                Text(store.mockAIEvents ? "Simulation is on — turn Mock AI Events off in settings for the camera test." : store.lastObservationResult)
+                                    .font(.caption).foregroundStyle(.secondary)
+                                if let latency = store.lastVisionLatency { Text(String(format: "Last check took %.1f seconds", latency)).font(.caption).foregroundStyle(.secondary) }
+                                Text("Keep Sous open and the phone unlocked. Start Watch before pouring; let each checkpoint register before the next action.").font(.caption).foregroundStyle(.secondary)
+                                Button("Reset test checkpoints") { store.correct(to: session.currentStepIndex) }.font(.subheadline)
+                            }.cookingCard()
+                        }
                         if session.recipe.steps.count > 1 {
                             HStack {
                                 Image(systemName: "chevron.left")
@@ -58,7 +80,9 @@ struct CookingView: View {
                     }.cookingCard()
                     if let model = store.glassesModel { GlassesPreview(model: model) }
                     Button { showCorrection = true } label: { Label("Correct recipe state", systemImage: "arrow.uturn.backward").font(.subheadline) }
-                    Label("Use a food thermometer for chicken: 165°F / 74°C. Timers and visual appearance cannot confirm safety.", systemImage: "thermometer.medium").font(.footnote).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                    if session.currentStep.requiredEventSequence == nil {
+                        Label("Use a food thermometer for chicken: 165°F / 74°C. Timers and visual appearance cannot confirm safety.", systemImage: "thermometer.medium").font(.footnote).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                    }
                 }.padding(22)
             } else { ContentUnavailableView("Ready when you are", systemImage: "frying.pan", description: Text("Choose a recipe to start cooking.")) }
         }.background(Palette.cream).navigationTitle("In the kitchen").navigationBarTitleDisplayMode(.inline).toolbar(.visible, for: .navigationBar)

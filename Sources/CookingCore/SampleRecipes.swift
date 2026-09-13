@@ -1,6 +1,19 @@
 import Foundation
 
 public enum SampleRecipes {
+    public static let waterBoilSpoonTest = Recipe(
+        id: "water-boil-spoon-test", title: "Water, Boil & Spoon Test",
+        subtitle: "Live camera test · 1 step · 3 checkpoints",
+        ingredients: ["Water", "Pot", "Wooden spoon"],
+        steps: [RecipeStep(
+            id: "water-boil-spoon", title: "Fill, boil, then add the spoon",
+            fullInstruction: "Put water in the pot and heat until it reaches a rolling boil, then put a wooden spoon into the pot. Start Cooking Watch before adding water. Keep the inside of the pot visible and wait for each checkpoint to register before moving on. This test has no timer.",
+            glassesInstruction: "Add water. Bring to a rolling boil.\nThen put a wooden spoon in.",
+            expectedEvents: [.waterAddedToPot, .waterRollingBoil, .woodenSpoonInserted],
+            requiresContinuousAttention: true, allowsAutomaticProgression: true,
+            requiredEventSequence: [.waterAddedToPot, .waterRollingBoil, .woodenSpoonInserted]
+        )])
+
     public static let panSearedChicken = Recipe(
         id: "pan-seared-chicken", title: "Pan-Seared Chicken",
         subtitle: "Two sides, one pan · about 20 min · serves 2",

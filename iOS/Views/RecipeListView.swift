@@ -13,13 +13,13 @@ struct RecipeListView: View {
                 NavigationLink { RecipeImportView() } label: {
                     Label("Import a photo, recipe or YouTube link", systemImage: "square.and.arrow.down").font(.headline).frame(maxWidth: .infinity, alignment: .leading).cookingCard()
                 }.accessibilityIdentifier("import_recipe")
-                ForEach(store.importedRecipes + SampleRecipes.all, id: \.id) { recipe in
+                ForEach([SampleRecipes.waterBoilSpoonTest] + store.importedRecipes + SampleRecipes.all, id: \.id) { recipe in
                     Button { selection = recipe } label: {
                         VStack(alignment: .leading, spacing: 14) {
                             HStack {
                                 Image(systemName: recipe.id == SampleRecipes.panSearedChicken.id ? "frying.pan.fill" : "carrot.fill").font(.system(size: 40)).foregroundStyle(Palette.forest)
                                 Spacer()
-                                Text("\(recipe.steps.count) STEPS").font(.system(size: 10, weight: .bold, design: .monospaced)).tracking(1)
+                                Text("\(recipe.steps.count) \(recipe.steps.count == 1 ? "STEP" : "STEPS")").font(.system(size: 10, weight: .bold, design: .monospaced)).tracking(1)
                             }
                             Text(recipe.title).font(.system(size: 26, design: .serif))
                             Text(recipe.subtitle).font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.leading)

@@ -58,7 +58,7 @@ function readBody(request) {
 }
 
 export function createObservationServer({ bearerToken, classify, importRecipe, maxRequestsPerMinute = 30,
-  maxConcurrentRequests = 2, now = () => Date.now() }) {
+  maxConcurrentRequests = 2, onDiagnostic = () => {}, now = () => Date.now() }) {
   if (typeof bearerToken !== 'string' || !/^[A-Za-z0-9._~+\/-]{32,256}$/u.test(bearerToken)) {
     throw new Error('COOKING_API_TOKEN must contain 32–256 token characters.');
   }
@@ -73,6 +73,8 @@ export function createObservationServer({ bearerToken, classify, importRecipe, m
   const controllers = new Set();
   const server = createServer({ maxHeaderSize: 8192, requestTimeout: 15000,
     headersTimeout: 10000, connectionsCheckingInterval: 1000, keepAliveTimeout: 5000 }, async (request, response) => {
+    const startedAt = Date.now();
+    let diagnosticCode = 'ok';
     const controller = new AbortController();
     const onClose = () => { if (!response.writableEnded) controller.abort(); };
     response.once('close', onClose);
@@ -131,11 +133,17 @@ export function createObservationServer({ bearerToken, classify, importRecipe, m
     } catch (error) {
       const safe = error instanceof HTTPError ? error
         : new HTTPError(500, 'internal_error', 'The observation could not be processed. Continue manually.');
+      diagnosticCode = safe.code;
       sendJSON(response, safe.status, { error: { code: safe.code, message: safe.message } }, {
         Connection: 'close',
         ...(safe.retryAfter ? { 'Retry-After': String(safe.retryAfter) } : {}),
       });
     } finally {
+      if (request.url === '/v1/cooking/observe') {
+        try { onDiagnostic({ time: new Date().toISOString(), status: response.statusCode,
+          code: controller.signal.aborted ? 'request_cancelled' : diagnosticCode,
+          durationMs: Date.now() - startedAt }); } catch { /* Diagnostics cannot break requests. */ }
+      }
       response.removeListener('close', onClose);
       if (ownsSlot) active--;
       controllers.delete(controller);

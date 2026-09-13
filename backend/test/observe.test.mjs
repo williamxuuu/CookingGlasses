@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { request as httpRequest } from 'node:http';
 import { createObservationServer } from '../src/server.mjs';
-import { createGeminiClassifier, MODEL } from '../src/gemini.mjs';
+import { createGeminiClassifier, OBSERVATION_MODEL } from '../src/gemini.mjs';
 import { LIMITS, validateRequest, validateObservation } from '../src/validation.mjs';
 
 const TOKEN = 'test-token-only-never-use-this-in-production';
@@ -58,7 +58,7 @@ test('HTTP observation sends the ordered JPEG sequence and validates the JSON re
   assert.equal(result.status, 200);
   assert.equal(result.headers.get('cache-control'), 'no-store');
   assert.deepEqual(await result.json(), observation());
-  assert.equal(outgoing.url, `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`);
+  assert.equal(outgoing.url, `https://generativelanguage.googleapis.com/v1beta/models/${OBSERVATION_MODEL}:generateContent`);
   assert.equal(outgoing.headers['x-goog-api-key'], 'fake-upstream-key');
   assert.equal(outgoing.redirect, 'error');
   assert.equal(outgoing.payload.store, false);
@@ -90,6 +90,26 @@ test('health, authentication, routes and methods never invoke the model', async 
   assert.equal(wrongMethod.status, 405);
   assert.equal(wrongMethod.headers.get('allow'), 'POST');
   assert.equal(calls, 0);
+});
+
+test('water checkpoints pass HTTP validation and restrict the model to the current checkpoint', async (t) => {
+  let outgoing;
+  let detectedEvent;
+  const classify = createGeminiClassifier({ apiKey: 'fake-test-key', fetchImpl: async (_url, options) => {
+    outgoing = JSON.parse(options.body);
+    return modelResponse(observation({ event: detectedEvent, ingredient: undefined }));
+  } });
+  const { post } = await serverFor(t, { classify });
+  for (const event of ['water_added_to_pot', 'water_rolling_boil', 'wooden_spoon_inserted']) {
+    detectedEvent = event;
+    const request = { ...input(), expectedEvents: [event] };
+    const response = await post(request);
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).event, event);
+    assert.deepEqual(outgoing.generationConfig.responseJsonSchema.properties.event.enum,
+      [event, 'uncertain', 'no_relevant_event']);
+    assert.throws(() => validateObservation(observation({ event: 'chicken_added_to_pan' }), request));
+  }
 });
 
 test('malformed JSON, media type, enum and timestamps fail before paid inference', async (t) => {
@@ -291,4 +311,19 @@ test('missing/weak tokens and missing Gemini key fail startup', () => {
     assert.throws(() => createObservationServer({ bearerToken, classify: async () => observation() }), /COOKING_API_TOKEN/);
   }
   assert.throws(() => createGeminiClassifier({}), /GEMINI_API_KEY/);
+});
+
+test('failure diagnostics contain status and code without camera or credential data', async (t) => {
+  const records = [];
+  const { post } = await serverFor(t, {
+    onDiagnostic: record => records.push(record),
+    classify: createGeminiClassifier({ apiKey: 'fake-test-key',
+      fetchImpl: async () => new Response('', { status: 429 }) }),
+  });
+  const response = await post();
+  assert.equal(response.status, 503);
+  assert.equal((await response.json()).error.code, 'model_rate_limited');
+  assert.equal(records.length, 1);
+  assert.equal(records[0].code, 'model_rate_limited');
+  assert.deepEqual(Object.keys(records[0]).sort(), ['code', 'durationMs', 'status', 'time']);
 });

@@ -27,10 +27,12 @@ public struct FrameProcessor {
     public private(set) var frames: [CameraFrame] = []
     private var previousLuminance: [UInt8]?
     private var lastSample: Date?
+    private var firstSample: Date?
     private var requestInFlight = false
     public init(configuration: Configuration = .init()) { self.configuration = configuration }
 
-    public mutating func receive(_ frame: CameraFrame, expectsAction: Bool, timerWaiting: Bool) -> [CameraFrame]? {
+    public mutating func receive(_ frame: CameraFrame, expectsAction: Bool, timerWaiting: Bool,
+                                 periodicCheckInterval: TimeInterval? = nil) -> [CameraFrame]? {
         guard frame.timestamp.timeIntervalSince1970.isFinite, frame.luminance.count == 32 * 32,
               !frame.jpegData.isEmpty, frame.jpegData.count <= 512 * 1024 else { return nil }
         let retention = configuration.bufferDuration.isFinite ? min(5, max(0.5, configuration.bufferDuration)) : 5
@@ -41,6 +43,7 @@ public struct FrameProcessor {
         let interval = configuredInterval.isFinite ? max(0.1, configuredInterval) : 1
         if let lastSample, frame.timestamp.timeIntervalSince(lastSample) < interval { return nil }
         lastSample = frame.timestamp
+        if firstSample == nil { firstSample = frame.timestamp }
         if let previous = previousLuminance, previous.count == frame.luminance.count {
             let total = zip(previous, frame.luminance).reduce(0.0) { $0 + abs(Double($1.0) - Double($1.1)) }
             changeScore = total / Double(previous.count) / 255
@@ -49,7 +52,13 @@ public struct FrameProcessor {
         frames.append(frame)
         if frames.count > capacity { frames.removeFirst(frames.count - capacity) }
         let threshold = configuration.changeThreshold.isFinite ? min(1, max(0, configuration.changeThreshold)) : 0.075
-        guard expectsAction, !requestInFlight, frames.count >= 2, changeScore >= threshold else { return nil }
+        // Some visual states (like a rolling boil) change too little in a 32x32
+        // image to trigger the motion gate. Explicitly opted-in steps get a fallback.
+        let periodicDue = periodicCheckInterval.map { interval in
+            interval.isFinite && interval > 0 && frame.timestamp.timeIntervalSince(lastRequestTimestamp ?? firstSample ?? frame.timestamp) >= interval
+        } ?? false
+        guard expectsAction, !requestInFlight, frames.count >= 2,
+              changeScore >= threshold || periodicDue else { return nil }
         let cooldown = configuration.requestCooldown.isFinite ? max(0, configuration.requestCooldown) : 8
         if let lastRequestTimestamp, frame.timestamp.timeIntervalSince(lastRequestTimestamp) < cooldown { return nil }
         requestInFlight = true
@@ -58,7 +67,7 @@ public struct FrameProcessor {
     }
     public mutating func finishRequest() { requestInFlight = false; frames.removeAll() }
     public mutating func reset() {
-        frames.removeAll(); previousLuminance = nil; lastSample = nil
+        frames.removeAll(); previousLuminance = nil; lastSample = nil; firstSample = nil
         requestInFlight = false; changeScore = 0; lastRequestTimestamp = nil
     }
 }
