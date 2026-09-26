@@ -40,7 +40,7 @@ YouTube imports read the video's audio and visuals through Gemini 3.6 Flash. Pho
 flowchart LR
     DAT[DAT camera adapter] --> Gate[Local frame gate + 5 s RAM buffer]
     Gate -->|meaningful change + expected action + cooldown| Proxy[Authenticated backend]
-    Proxy --> Gemini[Gemini 3.5 Flash]
+    Proxy --> Gemini[Gemini 3.6 Flash]
     Gemini -->|enum + confidence + timestamp| Rules[Deterministic state machine]
     Rules --> Store[Phone session store]
     User[Manual controls] --> Rules
@@ -68,7 +68,7 @@ Navigation/correction/undo invalidate in-flight analysis. Requests also carry a 
 - Follow [DAT setup and exact API reference](docs/DAT_0.9.0.md). It lists every verified 0.9.0 symbol and the physical acceptance checks. Use your signing team and Meta registration configuration; the checked-in `MetaAppID = 0` is for Meta Developer Mode.
 - Follow [backend setup](backend/README.md). Configure `GEMINI_API_KEY` and `COOKING_API_TOKEN` on the server; terminate HTTPS before exposing it to an iPhone.
 - In app Debug settings, enter the complete HTTPS `/v1/cooking/observe` endpoint and your backend bearer token. The token is memory-only. Turn off **Mock AI Events**, select physical glasses, connect, then explicitly start Watch.
-- Camera observations use `gemini-3.5-flash`; YouTube imports use `gemini-3.6-flash`. Live recipe imports have been checked through a local backend exposed with a temporary HTTPS tunnel. Keep the host running while testing; stable production hosting remains separate work.
+- Camera observations and YouTube imports use `gemini-3.6-flash`; photo and webpage imports use `gemini-3.5-flash`. Live recipe imports have been checked through a local backend exposed with a temporary HTTPS tunnel. Keep the host running while testing; stable production hosting remains separate work.
 
 ## Verification
 
