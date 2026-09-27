@@ -117,7 +117,7 @@ When a client closes its connection during inference, the upstream request is ab
 
 ## Gemini integration
 
-The endpoint is `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent`. The API key is sent in the `x-goog-api-key` header, never in the URL or iOS bundle. Google lists `gemini-3.5-flash` as accepting images and supporting structured output. [Gemini 3.5 Flash model documentation](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash)
+The endpoint is `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent` (photo and webpage recipe imports still use `gemini-3.5-flash`; see [recipe import](RECIPE_IMPORT.md)). The API key is sent in the `x-goog-api-key` header, never in the URL or iOS bundle. [Gemini model documentation](https://ai.google.dev/gemini-api/docs/models)
 
 Each request has one user content object containing recipe context, then alternating timestamp text and JPEG `inlineData` parts in chronological order. `generationConfig.responseMimeType` is `application/json`; `responseJsonSchema` limits the event enum, confidence, and timestamp range. `candidateCount` is 1 and output is capped at 1024 tokens. `store: false` disables request logging through the API's per-request logging control. No file upload or conversational state is created. [GenerateContent REST API](https://ai.google.dev/api/generate-content)
 
