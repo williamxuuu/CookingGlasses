@@ -58,6 +58,9 @@ Known events:
 | `pot_placed_on_stove` | A pot is placed on the stove |
 | `pasta_added_to_water` | Pasta enters the cooking water |
 | `ingredient_added` | An ingredient is visibly added |
+| `water_added_to_pot` | Water visibly enters a pot from a tap or container |
+| `water_rolling_boil` | Sustained vigorous bubbling across the water surface |
+| `wooden_spoon_inserted` | A wooden spoon moves from outside into the pot |
 | `uncertain` | Possible relevant action with insufficient evidence |
 | `no_relevant_event` | No relevant transition is observed |
 
