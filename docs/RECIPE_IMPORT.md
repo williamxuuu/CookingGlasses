@@ -34,6 +34,20 @@ or a public YouTube video link, using the same `url` field:
 
 Success returns `title`, `subtitle`, `ingredients`, `steps` (`title`, `instruction`, `glassesInstruction`, `timerSeconds`), `notes`, and nullable `sourceURL`. Limits: 80 ingredients, 40 steps, 24 hours per step timer. Both endpoints share authentication, body-size, rate, and concurrency limits. Photos/pages have a 45-second model deadline; YouTube videos have 90 seconds. The phone allows 110 seconds including transport. Keep Sous open during import; Cancel stops upstream work. Google retrieves the source; the backend never fetches submitted URLs itself. Long videos can exceed the deadline; use a shorter video showing one recipe.
 
+Import errors use the same envelope as observations (see [backend errors](BACKEND.md#errors-and-cancellation)), with import-specific codes:
+
+| Status | Codes | Meaning |
+| --- | --- | --- |
+| 400 | `invalid_request` | Not exactly one photo or link, a non-public or malformed link, or an invalid/oversized JPEG |
+| 422 | `not_a_recipe` / `incomplete_recipe` | No complete readable recipe, or the model output was blocked or truncated |
+| 422 | `page_unavailable` / `video_unavailable` | Google could not retrieve the page or open the YouTube video |
+| 429 | `import_rate_limited` | Gemini quota reached; honor `Retry-After` |
+| 502 | `invalid_recipe` / `invalid_model_response` / `import_failed` / `import_unavailable` | Output failed validation, could not be read, or Gemini could not be reached |
+| 503 | `import_unavailable` | Gemini is overloaded; honor `Retry-After` |
+| 504 | `import_timeout` | The model deadline passed |
+
+The shared `unauthorized`, `rate_limited`, `busy`, `request_too_large` and `unsupported_media_type` responses apply here too.
+
 ## Validation
 
 - `npm test` in backend: 25 passing tests, including YouTube URL normalization, video-vs-page routing, inaccessible video rejection, deadline/cancellation, input rejection, retrieval evidence, malformed output, authentication, shared rate limiting, and distinct overload/quota errors.
