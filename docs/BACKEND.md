@@ -110,7 +110,7 @@ Errors use a stable envelope:
 | 413 / 415 | `request_too_large` / `unsupported_media_type` | Reduce frame size; send plain JSON |
 | 429 | `rate_limited` / `busy` | Honor `Retry-After`; keep manual controls usable |
 | 502 | `model_unavailable` / `invalid_model_response` | Discard the observation and continue manually |
-| 503 | `model_unavailable` | Honor `Retry-After`; provider is temporarily unavailable |
+| 503 | `model_rate_limited` / `model_overloaded` | Honor `Retry-After`; provider is rate limited or temporarily overloaded |
 | 504 | `model_timeout` | Discard the observation and wait for a fresh sequence |
 | 500 | `internal_error` | Discard the observation and continue manually |
 
