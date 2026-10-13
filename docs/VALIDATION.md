@@ -2,6 +2,8 @@
 
 The implementation is validated at three separate levels. A passing simulator test cannot establish hardware behavior or vision accuracy.
 
+Later results (September 13: ordered water/boil/spoon checkpoints, 47 core and 27 backend tests, and vision-failure diagnostics) are recorded in [the water, boil & spoon test](WATER_STREAM_TEST.md).
+
 ## Current additions · September 12, 2026
 
 - Recipe imports: **41 core tests and 25 backend tests passed**, covering validated drafts, source/review-note/glasses-text retention, timers, persistence compatibility, YouTube routing, retrieval evidence, authentication, bounds, cancellation, and service errors.
