@@ -88,7 +88,7 @@ export function createObservationServer({ bearerToken, classify, importRecipe, m
       if (request.url !== '/v1/cooking/observe' && !isImport) throw new HTTPError(404, 'not_found', 'Route not found.');
       if (request.method !== 'POST') {
         response.setHeader('Allow', 'POST');
-        throw new HTTPError(405, 'method_not_allowed', 'Use POST for observations.');
+        throw new HTTPError(405, 'method_not_allowed', 'Use POST for this route.');
       }
       const authorization = request.headers.authorization;
       const supplied = typeof authorization === 'string' && authorization.startsWith('Bearer ')
@@ -101,10 +101,10 @@ export function createObservationServer({ bearerToken, classify, importRecipe, m
       while (acceptedAt.length && acceptedAt[0] <= currentTime - 60000) acceptedAt.shift();
       if (acceptedAt.length >= maxRequestsPerMinute) {
         const retryAfter = Math.max(1, Math.ceil((acceptedAt[0] + 60000 - currentTime) / 1000));
-        throw new HTTPError(429, 'rate_limited', 'Observation request limit reached. Try again shortly.', retryAfter);
+        throw new HTTPError(429, 'rate_limited', 'Request limit reached. Try again shortly.', retryAfter);
       }
       if (active >= maxConcurrentRequests) {
-        throw new HTTPError(429, 'busy', 'Another observation is in progress. Try again shortly.', 2);
+        throw new HTTPError(429, 'busy', 'Another request is in progress. Try again shortly.', 2);
       }
       // Count authenticated attempts before parsing, and cap concurrent bodies as
       // well as model requests. All state is bounded to this server process.
