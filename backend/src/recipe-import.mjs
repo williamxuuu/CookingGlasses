@@ -133,7 +133,7 @@ export function createRecipeImporter({ apiKey, fetchImpl = globalThis.fetch, tim
         x.urlRetrievalStatus === 'URL_RETRIEVAL_STATUS_SUCCESS' && x.retrievedUrl === input.url)) {
         throw new HTTPError(422, 'page_unavailable', 'That recipe page could not be opened. Try a public recipe page or upload a screenshot of its ingredients and directions.');
       }
-      if (envelope.promptFeedback?.blockReason || candidate?.finishReason !== 'STOP') {
+      if (envelope?.promptFeedback?.blockReason || candidate?.finishReason !== 'STOP') {
         throw new HTTPError(422, 'incomplete_recipe', 'The recipe could not be read completely. Try another photo or recipe link.');
       }
       const partsOut = candidate?.content?.parts?.filter(x => x.thought !== true);
