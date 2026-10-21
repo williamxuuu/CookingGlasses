@@ -9,6 +9,6 @@
     "start": "node --env-file=.env src/index.mjs",
     "start:env": "node src/index.mjs",
     "test": "node --test",
-    "check": "node --check src/index.mjs && node --check src/server.mjs && node --check src/gemini.mjs && node --check src/validation.mjs"
+    "check": "node --check src/index.mjs && node --check src/server.mjs && node --check src/gemini.mjs && node --check src/validation.mjs && node --check src/recipe-import.mjs && node --check src/errors.mjs"
   }
 }
