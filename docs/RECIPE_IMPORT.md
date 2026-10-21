@@ -32,7 +32,7 @@ or a public YouTube video link, using the same `url` field:
 {"jpegBase64":"..."}
 ```
 
-Success returns `title`, `subtitle`, `ingredients`, `steps` (`title`, `instruction`, `glassesInstruction`, `timerSeconds`), `notes`, and nullable `sourceURL`. Limits: 80 ingredients, 40 steps, 24 hours per step timer. Both endpoints share authentication, body-size, rate, and concurrency limits. Photos/pages have a 45-second model deadline; YouTube videos have 90 seconds. The phone allows 110 seconds including transport. Keep Sous open during import; Cancel stops upstream work. Google retrieves the source; the backend never fetches submitted URLs itself. Long videos can exceed the deadline; use a shorter video showing one recipe.
+Success returns `title`, `subtitle`, `ingredients`, `steps` (`title`, `instruction`, `glassesInstruction`, `timerSeconds`), `notes`, and nullable `sourceURL`. Limits: 80 ingredients, 40 steps, 12 review notes, 24 hours per step timer. Both endpoints share authentication, body-size, rate, and concurrency limits. Photos/pages have a 45-second model deadline; YouTube videos have 90 seconds. The phone allows 110 seconds including transport. Keep Sous open during import; Cancel stops upstream work. Google retrieves the source; the backend never fetches submitted URLs itself. Long videos can exceed the deadline; use a shorter video showing one recipe.
 
 Import errors use the same envelope as observations (see [backend errors](BACKEND.md#errors-and-cancellation)), with import-specific codes:
 
