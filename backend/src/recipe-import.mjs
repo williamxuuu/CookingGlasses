@@ -76,7 +76,7 @@ export function validateImportRequest(input) {
 export function validateImportedRecipe(value) {
   const bad = () => new HTTPError(502, 'invalid_recipe', 'The recipe could not be read reliably. Try a clearer photo or another recipe link.');
   const text = (x, max, empty = false) => typeof x === 'string' && x.length <= max
-    && (empty || x.trim().length > 0) && !/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(x);
+    && (empty || x.trim().length > 0) && !/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(x);
   if (!value || typeof value.isRecipe !== 'boolean') throw bad();
   if (!value.isRecipe) throw new HTTPError(422, 'not_a_recipe', 'No complete, readable recipe was found. Use a photo or page with ingredients and directions, or a public YouTube video demonstrating one recipe.');
   if (!text(value.title, 180) || !text(value.subtitle, 300, true)
